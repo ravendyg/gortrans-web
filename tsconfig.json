@@ -1,0 +1,14 @@
+{
+  "compilerOptions":
+  {
+    "jsx": "react",
+    "target": "ES5",
+    "sourceMap": true
+	},
+	"exclude": [
+		"**/*.d.ts",
+		"node_modules",
+		"typings",
+		"build"
+	]
+}
