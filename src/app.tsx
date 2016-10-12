@@ -7,11 +7,14 @@ import { Router, Route, Link, hashHistory } from 'react-router';
 
 import {BusSelector} from './components/bus-selector';
 
-import {map} from './services/map';
+import {Map} from './services/map';
+import {Socket} from './services/data-provider';
 
 require('./app.less');
 
-map.create();
+Socket.connect();
+Map.create();
+
 
 class App extends React.Component <AppState, AppProps>
 {

@@ -4,10 +4,10 @@
 require("./map.less");
 
 // display map
-function Map()
+function _Map()
 {}
 
-Map.prototype.create = function create()
+_Map.prototype.create = function create()
 {
   var southWest = L.latLng(30, 10),
     northEast = L.latLng(80, 200),
@@ -24,7 +24,7 @@ Map.prototype.create = function create()
     L.tileLayer['provider']('OpenStreetMap.HOT').addTo(map);
 }
 
-const map = new Map();
+const Map = new _Map();
 
-export { map };
+export { Map };
 // document.querySelector('.leaflet-control-zoom').remove();

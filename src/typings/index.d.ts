@@ -9,3 +9,14 @@ interface AppState
 
 interface AppProps
 {}
+
+declare type ActionType =
+{
+  type: number,
+  payload?: any
+};
+
+declare interface SocketService
+{
+  connect (): void;
+}
