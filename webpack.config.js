@@ -1,5 +1,6 @@
 /* global process */
 /* global __dirname */
+'user strict';
 // const NODE_ENV = process.env.NODE_ENV || 'development';
 
 var webpack = require('webpack');
@@ -22,20 +23,37 @@ module.exports =
       filename: '[name].min.js',
       library: '[name]'
     },
-    resolve: {
-        extensions: ['', '.webpack.js', '.web.js', '.ts', '.js', '.tsx', '.jsx', '.html']
+    resolve:
+    {
+      extensions: ['', '.webpack.js', '.web.js', '.ts', '.js', '.tsx', '.jsx', '.html', '.css', '.less'],
     },
     watch: dev,
     devtool: dev ? "source-map" : null,
-    module: {
-        loaders: [
-            { test: /\.tsx?$/, loader: 'babel!ts-loader' },
-            { test: /\.html$/, loader: "text-loader", query: {
-                                                            presets: [`react`],
-                                                            plugins: [`react-html-attrs`]
-            }},
-            { test: /\.css$/, loader: "style-loader!css-loader" },
-        ]
+    module:
+    {
+      loaders: [
+        {
+          test: /\.tsx?$/,
+          loader: 'babel!ts-loader'
+        },
+        {
+          test: /\.html$/,
+          loader: "text-loader",
+          query:
+          {
+            presets: [`react`],
+            plugins: [`react-html-attrs`]
+          }
+        },
+        {
+          test: /\.css$/,
+          loader: "style-loader!css-loader"
+        },
+        {
+          test: /\.less$/,
+          loader: "style!css!less"
+        }
+      ]
     },
     plugins: dev ? [] : [
         new webpack.DefinePlugin({

@@ -1,6 +1,4 @@
 /// <reference path="./typings/index.d.ts" />
-
-/* global vendor */;
 'use strict';
 
 import * as React from 'react';
@@ -8,6 +6,12 @@ import { render } from 'react-dom';
 import { Router, Route, Link, hashHistory } from 'react-router';
 
 import {BusSelector} from './components/bus-selector';
+
+import {map} from './services/map';
+
+require('./app.less');
+
+map.create();
 
 class App extends React.Component <AppState, AppProps>
 {
