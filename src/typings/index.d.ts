@@ -20,3 +20,22 @@ declare interface SocketService
 {
   connect (): void;
 }
+
+declare type ListMarsh =
+{
+  type: string,
+  ways: Way []
+};
+
+declare type Way =
+{
+  marsh: string,
+  name: string,
+  stopb: string,
+  stope: string
+};
+
+declare type ReduxState =
+{
+  dataStorage: ListMarsh []
+};

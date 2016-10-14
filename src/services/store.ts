@@ -44,12 +44,23 @@ const connection =
   }
 };
 
+const dataStorage =
+(state: ListMarsh [] = [], action: ActionType ) =>
+{
+  switch( action.type )
+  {
+    case Actions.LOAD_LIST_OF_ROUTES:
+      return action.payload.routes;
+    default:
+      return state;
+  }
+};
 
 
 
 const app =
 combineReducers({
-  busList, connection
+  busList, connection, dataStorage
 });
 
 export const Store = createStore(app);

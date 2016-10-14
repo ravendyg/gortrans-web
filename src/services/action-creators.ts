@@ -9,5 +9,21 @@ export enum Actions
   UPDATE_BUS_DATA = 3,
 
   CONNECTED = 4,
-  DISCONNECTED = 5
+  DISCONNECTED = 5,
+
+  LOAD_LIST_OF_ROUTES = 6
+};
+
+export const ActionCreators =
+{
+  loadListOfRoutes: (routes: ListMarsh []) =>
+  {
+    return {
+      type: Actions.LOAD_LIST_OF_ROUTES,
+      payload:
+      {
+        routes
+      }
+    };
+  }
 };
