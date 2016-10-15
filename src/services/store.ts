@@ -47,21 +47,49 @@ const connection =
 const dataStorage =
 ( state: dataStorageStore =
  {
-   routeCodes: []
+   routes: {}
   },
   action: ActionType
 ) =>
 {
   switch( action.type )
   {
-    case Actions.LOAD_LIST_OF_ROUTE_CODES:
-      return {
-        routeCodes: action.payload.routeCodes
-      };
+    case Actions.LOAD_LIST_OF_ROUTES:
+      var out: dataStorageStore = { routes: {} };
+      var list: any
+
+      // create lists
+      out = mapVehiclesIntoCodes(action.payload.routes, out, 'bus', 0);
+      out = mapVehiclesIntoCodes(action.payload.routes, out, 'trolley', 1);
+      out = mapVehiclesIntoCodes(action.payload.routes, out, 'tram', 2);
+      out = mapVehiclesIntoCodes(action.payload.routes, out, 'small', 7);
+
+      return out;
+
     default:
       return state;
   }
 };
+
+function mapVehiclesIntoCodes(
+  data: ListMarsh [],
+  target: dataStorageStore,
+  vehicle: string,
+  type: number
+): dataStorageStore
+{
+  var list: ListMarsh = data['find']( e => e.type === type);
+  target.routes[vehicle] = [];
+  for ( let way of list.ways )
+  {
+    target.routes[vehicle].push({
+      code: [type+1, way.marsh, 'W', way.name].join('-'),
+      title: way.name
+    });
+  }
+
+  return target;
+}
 
 
 

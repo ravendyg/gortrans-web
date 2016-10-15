@@ -11,18 +11,18 @@ export enum Actions
   CONNECTED = 4,
   DISCONNECTED = 5,
 
-  LOAD_LIST_OF_ROUTE_CODES = 6
+  LOAD_LIST_OF_ROUTES = 6
 };
 
 export const ActionCreators =
 {
-  loadListOfRouteCodes: (routeCodes: string []) =>
+  loadListOfRoutes: (routes: ListMarsh []) =>
   {
     return {
-      type: Actions.LOAD_LIST_OF_ROUTE_CODES,
+      type: Actions.LOAD_LIST_OF_ROUTES,
       payload:
       {
-        routeCodes
+        routes
       }
     };
   }

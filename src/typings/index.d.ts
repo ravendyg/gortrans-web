@@ -42,5 +42,12 @@ declare type ReduxState =
 
 declare type dataStorageStore =
 {
-  routeCodes: string []
+  routes:
+  {
+    [type: string]:
+    {
+      title: string,
+      code: string
+    } []
+  }
 };
