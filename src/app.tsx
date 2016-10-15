@@ -3,11 +3,12 @@
 
 import * as React from 'react';
 import { render } from 'react-dom';
-import { Router, Route, Link, hashHistory } from 'react-router';
+import { Router, Route, Link, browserHistory } from 'react-router';
 
 import { config } from './config';
 
 import {BusSelector} from './components/bus-selector';
+import {SearchBtn} from './components/search-btn';
 
 import {Map} from './services/map';
 import {Socket} from './services/data-provider';
@@ -65,15 +66,13 @@ request
   }
 );
 
-Store.subscribe(
-  () =>
-  {
-    console.log(
 
-    (Store.getState() as ReduxState).dataStorage
-    );
-  }
-);
+var appWrapperStyle =
+{
+  position: 'relative',
+  height: 0,
+  width: 0
+};
 
 class App extends React.Component <AppState, AppProps>
 {
@@ -81,8 +80,8 @@ class App extends React.Component <AppState, AppProps>
 
   render () {
     return (
-    <div>
-      <Link to={'/select-bus'}>forward</Link>
+    <div style={appWrapperStyle}>
+      <SearchBtn/>
       {this.props.children}
     </div>
     )
@@ -105,6 +104,6 @@ const routes =
 }
 
 render(
-    <Router history={hashHistory} routes={routes} />,
+    <Router history={browserHistory} routes={routes} />,
     document.getElementById(`root`)
 );

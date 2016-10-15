@@ -47,7 +47,7 @@ const connection =
 const dataStorage =
 ( state: dataStorageStore =
  {
-   routes: {}
+   routes: {},
   },
   action: ActionType
 ) =>
@@ -56,7 +56,6 @@ const dataStorage =
   {
     case Actions.LOAD_LIST_OF_ROUTES:
       var out: dataStorageStore = { routes: {} };
-      var list: any
 
       // create lists
       out = mapVehiclesIntoCodes(action.payload.routes, out, 'bus', 0);

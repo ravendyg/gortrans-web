@@ -49,5 +49,5 @@ declare type dataStorageStore =
       title: string,
       code: string
     } []
-  }
+  },
 };

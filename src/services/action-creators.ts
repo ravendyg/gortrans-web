@@ -11,7 +11,7 @@ export enum Actions
   CONNECTED = 4,
   DISCONNECTED = 5,
 
-  LOAD_LIST_OF_ROUTES = 6
+  LOAD_LIST_OF_ROUTES = 6,
 };
 
 export const ActionCreators =
@@ -20,10 +20,7 @@ export const ActionCreators =
   {
     return {
       type: Actions.LOAD_LIST_OF_ROUTES,
-      payload:
-      {
-        routes
-      }
+      payload: { routes }
     };
   }
 };

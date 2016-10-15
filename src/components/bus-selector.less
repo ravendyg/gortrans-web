@@ -1,0 +1,31 @@
+.bus-selector-wrapper
+{
+  position: absolute;
+  z-index: 30;
+  height: 100vh;
+  background-color: #f5f5f5;
+
+  transition: left 0.5s;
+}
+.bus-selector-wrapper.opened
+{
+  left: 0;
+}
+
+@media screen and (max-width: 400px)
+{
+  .bus-selector-wrapper
+  {
+    width: 100vw;
+    left: -100vw;
+  }
+}
+
+@media screen and (min-width: 401px)
+{
+  .bus-selector-wrapper
+  {
+    left: -400px;
+    width: 400px;
+  }
+}
