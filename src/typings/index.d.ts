@@ -37,5 +37,10 @@ declare type Way =
 
 declare type ReduxState =
 {
-  dataStorage: ListMarsh []
+  dataStorage: dataStorageStore
+};
+
+declare type dataStorageStore =
+{
+  routeCodes: string []
 };

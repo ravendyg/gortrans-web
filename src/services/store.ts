@@ -45,12 +45,19 @@ const connection =
 };
 
 const dataStorage =
-(state: ListMarsh [] = [], action: ActionType ) =>
+( state: dataStorageStore =
+ {
+   routeCodes: []
+  },
+  action: ActionType
+) =>
 {
   switch( action.type )
   {
-    case Actions.LOAD_LIST_OF_ROUTES:
-      return action.payload.routes;
+    case Actions.LOAD_LIST_OF_ROUTE_CODES:
+      return {
+        routeCodes: action.payload.routeCodes
+      };
     default:
       return state;
   }

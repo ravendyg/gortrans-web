@@ -22,19 +22,19 @@ require('./app.less');
 Socket.connect();
 Map.create();
 
-let listOfRoutesTsp;
+let listOfRouteCodesTimestamp;
 try
 {
-  listOfRoutesTsp = JSON.parse( localStorage.getItem('list-of-routes-tsp') ) || 0;
+  listOfRouteCodesTimestamp = JSON.parse( localStorage.getItem('list-of-route-codes-timestamp') ) || 0;
 }
 catch (err)
 {
   console.error(err);
-  listOfRoutesTsp = 0;
+  listOfRouteCodesTimestamp = 0;
 }
 
 request
-.get(`${config.URL}${config.GET_LIST_OF_ROUTES}?tsp=${listOfRoutesTsp}`)
+.get(`${config.URL}${config.GET_LIST_OF_ROUTE_CODES}?timestamp=${listOfRouteCodesTimestamp}`)
 .end(
   (err: Error, res: request.Response) =>
   {
@@ -46,16 +46,16 @@ request
     {
       try
       {
-        if ( res.body.data.routes.length > 0 )
+        if ( res.body.data.routeCodes.length > 0 )
         {
-          localStorage.setItem('list-of-routes', JSON.stringify(res.body.data.routes));
-          localStorage.setItem('list-of-routes-tsp', JSON.stringify(res.body.data.tsp));
+          localStorage.setItem('list-of-route-codes', JSON.stringify(res.body.data.routeCodes));
+          localStorage.setItem('list-of-route-codes-timestamp', JSON.stringify(res.body.data.timestamp));
         }
         else
         {
-          res.body.data.routes = JSON.parse( localStorage.getItem('list-of-routes') || '[]');
+          res.body.data.routeCodes = JSON.parse( localStorage.getItem('list-of-route-codes') || '[]');
         }
-        Store.dispatch( ActionCreators.loadListOfRoutes(res.body.data.routes) );
+        Store.dispatch( ActionCreators.loadListOfRouteCodes(res.body.data.routeCodes) );
       }
       catch (err)
       {
