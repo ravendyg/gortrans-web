@@ -44,10 +44,20 @@ declare type dataStorageStore =
 {
   routes:
   {
+    [type: string]: VehicleMeta []
+  },
+  typeNames:
+  {
     [type: string]:
     {
-      title: string,
-      code: string
-    } []
-  },
+      id: number,
+      name: string
+    }
+  }
+};
+
+declare type VehicleMeta =
+{
+  title: string,
+  code: string
 };

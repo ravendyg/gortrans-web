@@ -13,18 +13,18 @@ interface SearchBtnState
 interface SearchBtnProps
 {}
 
-export class SearchBtn extends React.Component <SearchBtnState, SearchBtnProps>
+export class SearchBtn extends React.Component <SearchBtnProps, SearchBtnState>
 {
   constructor () { super(); }
 
   render()
   {
     return(
-      <div className='search-btn'>
-        <Link to={'/select-bus'}>
+      <Link to={'/select-bus'} className='search-btn'>
+        <div>
           <i className="fa fa-search" aria-hidden="true"></i>
-        </Link>
-      </div>
+        </div>
+      </Link>
     );
   }
 }

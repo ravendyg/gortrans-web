@@ -48,6 +48,13 @@ const dataStorage =
 ( state: dataStorageStore =
  {
    routes: {},
+   typeNames:
+   {
+     'bus':     {id: 0, name: 'Автобусы'},
+     'trolley': {id: 1, name: 'Троллейбусы'},
+     'tram':    {id: 2, name: 'Трамваи'},
+     'small':   {id: 7, name: 'Маршрутки'}
+   }
   },
   action: ActionType
 ) =>
@@ -55,7 +62,7 @@ const dataStorage =
   switch( action.type )
   {
     case Actions.LOAD_LIST_OF_ROUTES:
-      var out: dataStorageStore = { routes: {} };
+      var out: dataStorageStore = { routes: {}, typeNames: state.typeNames };
 
       // create lists
       out = mapVehiclesIntoCodes(action.payload.routes, out, 'bus', 0);

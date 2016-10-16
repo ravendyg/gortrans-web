@@ -6,18 +6,31 @@
 import * as React from 'react';
 import { browserHistory } from 'react-router';
 
+import {Store} from './../services/store';
+
+import {BusGroup} from './bus-selector/bus-group';
+
 require('./bus-selector.less');
 
 interface BusSelectorState
 {
   className: string;
+  items:
+  {
+    name: string,
+    vehicles: VehicleMeta []
+  } [];
 }
 interface BusSelectorProps
 {}
 
-export class BusSelector extends React.Component <BusSelectorState, BusSelectorProps>
+export class BusSelector extends React.Component <BusSelectorProps, BusSelectorState>
 {
-  public state: { className: string };
+  // private _allItems:
+  // {
+  //   name: string,
+  //   vehicles: VehicleMeta []
+  // } [];
 
   constructor ()
   {
@@ -25,8 +38,23 @@ export class BusSelector extends React.Component <BusSelectorState, BusSelectorP
 
     this.state =
     {
-      className: 'bus-selector-wrapper'
+      className: 'menu',
+      items: []
     };
+
+    var data = (Store.getState() as ReduxState).dataStorage;
+
+    for ( var type of Object.keys( data.typeNames ) )
+    {
+      this.state.items.push({
+        name: data.typeNames[type].name,
+        vehicles: []
+      });
+      // this._allItems.push({
+      //   name: data.typeNames[type].name,
+      //   vehicles: data.routes[type]
+      // });
+    }
   }
 
   public componentDidMount()
@@ -34,14 +62,20 @@ export class BusSelector extends React.Component <BusSelectorState, BusSelectorP
     setTimeout(
       () =>
       {
-        this.setState({className: 'bus-selector-wrapper opened'});
+        this.setState({
+          className: 'menu opened',
+          items: this.state.items
+        });
       }
     );
   }
 
   private _closeMenu()
   {
-    this.setState({className: 'bus-selector-wrapper'});
+    this.setState({
+      className: 'menu',
+      items: this.state.items
+    });
     setTimeout(
       () =>
       {
@@ -54,9 +88,15 @@ export class BusSelector extends React.Component <BusSelectorState, BusSelectorP
   render()
   {
     return(
-      <div className={this.state.className}>
-        {'Hello'}
-        <button onClick={this._closeMenu.bind(this)}>back</button>
+      <div className="bus-selector-wrapper">
+        <div className={this.state.className}>
+          <input className="search-input" type="number" placeholder="Номер маршрута"/>
+
+          {this.state.items.map( e =>
+            <BusGroup key={e.name} item={e} />
+          )}
+        </div>
+        <div className="overlay" onClick={this._closeMenu.bind(this)}></div>
       </div>
     );
   }
