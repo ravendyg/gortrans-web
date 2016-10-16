@@ -5,6 +5,8 @@ import * as React from 'react';
 
 require('./bus-group.less');
 
+import { Socket} from '../../services/data-provider';
+
 interface BusGroupState
 {
   expanded: boolean;
@@ -51,7 +53,14 @@ export class BusGroup extends React.Component <BusGroupProps, BusGroupState>
         </div>
         {this.state.expanded
           ? this.props.item.vehicles.map(
-            e => <div key={e.code} className="item">{e.title}</div>
+            e =>
+              <div
+                key={e.code}
+                className="item"
+                onClick={Socket.addBusListener.bind(this, e.code)}
+              >
+                {e.title}
+              </div>
           )
           : ''
         }
