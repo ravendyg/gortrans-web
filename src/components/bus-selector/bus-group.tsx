@@ -49,7 +49,12 @@ export class BusGroup extends React.Component <BusGroupProps, BusGroupState>
             <i className={this.state.expanded ? 'fa fa-arrow-down' : 'fa fa-arrow-right'} aria-hidden="true"></i>
           </div>
         </div>
-
+        {this.state.expanded
+          ? this.props.item.vehicles.map(
+            e => <div key={e.code} className="item">{e.title}</div>
+          )
+          : ''
+        }
       </div>
     );
   }

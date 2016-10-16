@@ -31,6 +31,10 @@ export class BusSelector extends React.Component <BusSelectorProps, BusSelectorS
   //   name: string,
   //   vehicles: VehicleMeta []
   // } [];
+  private _index: number;
+  private _typeKeys: string [];
+
+  private _data: dataStorageStore;
 
   constructor ()
   {
@@ -42,12 +46,13 @@ export class BusSelector extends React.Component <BusSelectorProps, BusSelectorS
       items: []
     };
 
-    var data = (Store.getState() as ReduxState).dataStorage;
+    this._data = (Store.getState() as ReduxState).dataStorage;
+    this._typeKeys = Object.keys( this._data.typeNames );
 
-    for ( var type of Object.keys( data.typeNames ) )
+    for ( var type of this._typeKeys )
     {
       this.state.items.push({
-        name: data.typeNames[type].name,
+        name: this._data.typeNames[type].name,
         vehicles: []
       });
       // this._allItems.push({
@@ -55,6 +60,8 @@ export class BusSelector extends React.Component <BusSelectorProps, BusSelectorS
       //   vehicles: data.routes[type]
       // });
     }
+
+    this._index = 0;
   }
 
   public componentDidMount()
@@ -68,6 +75,35 @@ export class BusSelector extends React.Component <BusSelectorProps, BusSelectorS
         });
       }
     );
+  }
+
+  private _searchChange(input: InputChangeEvent)
+  {
+    setTimeout(
+      this._checkTimeToSearch.bind(this, ++this._index, input.target.value),
+      250
+    );
+  }
+
+  private _checkTimeToSearch(index: number, value: string)
+  {
+    if ( index === this._index )
+    {
+      let itemsCopy = this.state.items;
+      for ( let i = 0; i < this._typeKeys.length; i++ )
+      {
+        itemsCopy[i].vehicles =
+          this._data.routes[ this._typeKeys[i] ]
+          .filter( e => e.title.match(value) )
+          ;
+      }
+      let tempState =
+      {
+        className: this.state.className,
+        items: itemsCopy
+      };
+      this.setState( tempState );
+    }
   }
 
   private _closeMenu()
@@ -90,7 +126,12 @@ export class BusSelector extends React.Component <BusSelectorProps, BusSelectorS
     return(
       <div className="bus-selector-wrapper">
         <div className={this.state.className}>
-          <input className="search-input" type="number" placeholder="Номер маршрута"/>
+          <input
+            className="search-input"
+            type="number"
+            placeholder="Номер маршрута"
+            onChange={this._searchChange.bind(this)}
+          />
 
           {this.state.items.map( e =>
             <BusGroup key={e.name} item={e} />

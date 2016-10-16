@@ -61,3 +61,13 @@ declare type VehicleMeta =
   title: string,
   code: string
 };
+
+interface FormControlEventTarget extends EventTarget
+{
+  value: string;
+}
+
+interface InputChangeEvent extends Event
+{
+  target: FormControlEventTarget;
+}
