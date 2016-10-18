@@ -56,7 +56,8 @@ declare type dataStorageStore =
       id: number,
       name: string
     }
-  }
+  },
+  vehicles: StateWithMarkers
 };
 
 declare type VehicleMeta =
@@ -92,9 +93,21 @@ declare type busData =
   ramp: string
 };
 
+declare type StateWithMarkers =
+{
+  [busCode: string]:
+  {
+    [graph: string]:
+    {
+      data: busData,
+      marker: L.Marker
+    }
+  }
+};
+
 declare type State =
 {
-  [id: string]:
+  [busCode: string]:
   {
     [graph: string]: busData
   }
@@ -102,7 +115,7 @@ declare type State =
 
 declare type StateChanges =
 {
-  [id: string]:
+  [busCode: string]:
   {
     update:
     {
@@ -115,3 +128,11 @@ declare type StateChanges =
     remove: string []   // graph numbers to be removed
   }
 };
+
+interface iMap
+{
+  create(): void;
+  addVehicle(state: State): void;
+  updateVehicle(changes: StateChanges): void;
+  removeVehicle(busCode: string): void;
+}

@@ -5,6 +5,8 @@ import * as io from 'socket.io-client';
 
 import {config} from '../config';
 
+import {Map} from './map';
+
 var socket: SocketIOClient.Socket;
 
 function _Socket()
@@ -28,7 +30,7 @@ function connect()
     'bus listener created',
     (state: State) =>
     {
-      console.log(state);
+      Map.addVehicle(state);
     }
   );
 
@@ -37,6 +39,7 @@ function connect()
     (changes: StateChanges) =>
     {
       console.log(changes);
+      Map.updateVehicle(changes);
     }
   );
 };

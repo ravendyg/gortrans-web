@@ -12,6 +12,8 @@ export enum Actions
   DISCONNECTED = 5,
 
   LOAD_LIST_OF_ROUTES = 6,
+
+  UPDATE_STATE = 7,
 };
 
 export const ActionCreators =
@@ -37,6 +39,14 @@ export const ActionCreators =
     return {
       type: Actions.REMOVE_BUS_FROM_LIST,
       payload: { bus }
+    }
+  },
+
+  updateState: (state: StateWithMarkers) =>
+  {
+    return {
+      type: Actions.UPDATE_STATE,
+      payload: { state }
     }
   }
 };

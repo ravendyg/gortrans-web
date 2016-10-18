@@ -70,7 +70,7 @@ export class BusListItem extends React.Component <BusListItemProps, BusListItemS
         <div className="image" onClick={this.props.clickCb}>
           <img src={imgSrc} />
         </div>
-        <RemoveBtn remove={this.props.removeCb}/>
+        <RemoveBtn remove={this.props.removeCb} />
       </div>
     );
   }
