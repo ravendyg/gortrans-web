@@ -6,7 +6,7 @@ import {config} from '../config';
 import {Actions} from './action-creators';
 
 const busList =
-(state: string [] = [], action: ActionType) =>
+(state: VehicleMeta [] = [], action: ActionType) =>
 {
   switch( action.type )
   {
@@ -16,14 +16,10 @@ const busList =
           ? state.slice(1)
           : state
           ;
-      return state.concat( action.payload.bus );
+      return temp.concat( action.payload.bus );
 
     case Actions.REMOVE_BUS_FROM_LIST:
-      let index = state.indexOf( action.payload.bus );
-      return index !== -1
-        ? state.slice(0, index).concat( state.slice(index+1) )
-        : state
-        ;
+      return state.filter( e => e.code !== action.payload.bus.code );
 
     default:
       return state;

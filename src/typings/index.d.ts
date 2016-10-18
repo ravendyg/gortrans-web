@@ -39,7 +39,8 @@ declare type Way =
 
 declare type ReduxState =
 {
-  dataStorage: dataStorageStore
+  dataStorage: dataStorageStore,
+  busList: VehicleMeta [],
 };
 
 declare type dataStorageStore =

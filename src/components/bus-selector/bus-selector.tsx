@@ -1,14 +1,15 @@
-/// <reference path="../typings/index.d.ts" />
+/// <reference path="../../typings/index.d.ts" />
 
 /* global vendor */;
 'use strict';
 
 import * as React from 'react';
+import { findDOMNode } from 'react-dom';
 import { browserHistory } from 'react-router';
 
-import {Store} from './../services/store';
+import {Store} from './../../services/store';
 
-import {BusGroup} from './bus-selector/bus-group';
+import {BusGroup} from './bus-group';
 
 require('./bus-selector.less');
 
@@ -26,11 +27,6 @@ interface BusSelectorProps
 
 export class BusSelector extends React.Component <BusSelectorProps, BusSelectorState>
 {
-  // private _allItems:
-  // {
-  //   name: string,
-  //   vehicles: VehicleMeta []
-  // } [];
   private _index: number;
   private _typeKeys: string [];
 
@@ -55,10 +51,6 @@ export class BusSelector extends React.Component <BusSelectorProps, BusSelectorS
         name: this._data.typeNames[type].name,
         vehicles: []
       });
-      // this._allItems.push({
-      //   name: data.typeNames[type].name,
-      //   vehicles: data.routes[type]
-      // });
     }
 
     this._index = 0;
@@ -75,6 +67,7 @@ export class BusSelector extends React.Component <BusSelectorProps, BusSelectorS
         });
       }
     );
+    (findDOMNode(this.refs['search']) as HTMLInputElement).focus();
   }
 
   private _searchChange(input: InputChangeEvent)
@@ -106,7 +99,7 @@ export class BusSelector extends React.Component <BusSelectorProps, BusSelectorS
     }
   }
 
-  private _closeMenu()
+  public closeMenu()
   {
     this.setState({
       className: 'menu',
@@ -131,13 +124,18 @@ export class BusSelector extends React.Component <BusSelectorProps, BusSelectorS
             type="number"
             placeholder="Номер маршрута"
             onChange={this._searchChange.bind(this)}
+            ref="search"
           />
 
           {this.state.items.map( e =>
-            <BusGroup key={e.name} item={e} />
+            <BusGroup
+              key={e.name}
+              item={e}
+              closeCb={this.closeMenu.bind(this)}
+            />
           )}
         </div>
-        <div className="overlay" onClick={this._closeMenu.bind(this)}></div>
+        <div className="overlay" onClick={this.closeMenu.bind(this)}></div>
       </div>
     );
   }

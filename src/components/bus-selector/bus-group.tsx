@@ -5,7 +5,7 @@ import * as React from 'react';
 
 require('./bus-group.less');
 
-import { Socket} from '../../services/data-provider';
+import { addBus } from '../../services/user-actions';
 
 interface BusGroupState
 {
@@ -17,7 +17,8 @@ interface BusGroupProps
   {
     name: string,
     vehicles: VehicleMeta []
-  }
+  },
+  closeCb: any
 }
 
 export class BusGroup extends React.Component <BusGroupProps, BusGroupState>
@@ -40,6 +41,12 @@ export class BusGroup extends React.Component <BusGroupProps, BusGroupState>
     this.setState({ expanded: !this.state.expanded });
   }
 
+  private _addBus(e: VehicleMeta)
+  {
+    addBus(e);
+    this.props.closeCb();
+  }
+
 
   render()
   {
@@ -57,7 +64,7 @@ export class BusGroup extends React.Component <BusGroupProps, BusGroupState>
               <div
                 key={e.code}
                 className="item"
-                onClick={Socket.addBusListener.bind(this, e.code)}
+                onClick={this._addBus.bind(this, e)}
               >
                 {e.title}
               </div>

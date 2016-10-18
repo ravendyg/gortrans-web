@@ -8,8 +8,9 @@ import { Router, Route, Link, browserHistory } from 'react-router';
 
 import { config } from './config';
 
-import {BusSelector} from './components/bus-selector';
-import {SearchBtn} from './components/search-btn';
+import { BusSelector } from './components/bus-selector/bus-selector';
+import { BusList } from './components/bus-list/bus-list';
+import { SearchBtn } from './components/search-btn';
 
 import {Map} from './services/map';
 import {Socket} from './services/data-provider';
@@ -82,6 +83,7 @@ class App extends React.Component <AppState, AppProps>
   render () {
     return (
     <div style={appWrapperStyle}>
+      <BusList/>
       <SearchBtn/>
       {this.props.children}
     </div>

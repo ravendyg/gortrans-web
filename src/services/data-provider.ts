@@ -42,15 +42,15 @@ function connect()
 };
 
 _Socket.prototype.addBusListener =
-function addBusListener(code: string)
+function addBusListener(busCode: string)
 {
-  socket.emit( 'add bus listener', code );
+  socket.emit( 'add bus listener', busCode );
 };
 
 _Socket.prototype.removeBusListener =
-function removeBusListener(code: string)
+function removeBusListener(busCode: string)
 {
-  socket.emit( 'remove bus listener', code );
+  socket.emit( 'remove bus listener', busCode );
 };
 
 const Socket: SocketService = new _Socket();

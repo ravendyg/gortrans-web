@@ -22,5 +22,21 @@ export const ActionCreators =
       type: Actions.LOAD_LIST_OF_ROUTES,
       payload: { routes }
     };
+  },
+
+  addBusToList: (bus: VehicleMeta) =>
+  {
+    return {
+      type: Actions.ADD_BUS_TO_LIST,
+      payload: { bus }
+    }
+  },
+
+  removeBusFromList: (bus: VehicleMeta) =>
+  {
+    return {
+      type: Actions.REMOVE_BUS_FROM_LIST,
+      payload: { bus }
+    }
   }
 };
