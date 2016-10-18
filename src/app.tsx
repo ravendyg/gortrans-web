@@ -19,54 +19,71 @@ import {ActionCreators} from './services/action-creators';
 import {Store} from './services/store';
 
 import * as request from 'superagent';
+import * as localForage from 'localforage';
 
 require('./app.less');
 
 Socket.connect();
 Map.create();
 
-let listOfRoutesTimestamp;
-try
-{
-  listOfRoutesTimestamp = JSON.parse( localStorage.getItem('list-of-routes-timestamp') ) || 0;
-}
-catch (err)
-{
-  console.error(err);
-  listOfRoutesTimestamp = 0;
-}
-
-request
-.get(`${config.URL}${config.GET_LIST_OF_ROUTES}?timestamp=${listOfRoutesTimestamp}`)
-.end(
-  (err: Error, res: request.Response) =>
+localForage.getItem('list-of-routes-timestamp')
+.then(
+  (listOfRoutesTimestamp: number) =>
   {
-    if ( err )
+    makeRequestForBasicData(listOfRoutesTimestamp || 0);
+  }
+)
+.catch(
+  (err: Error) =>
+  {
+    console.error(err, 'get timestamp from localForage');
+    makeRequestForBasicData(0);
+  }
+);
+
+function makeRequestForBasicData(listOfRoutesTimestamp: number)
+{
+  request
+  .get(`${config.URL}${config.GET_LIST_OF_ROUTES}?timestamp=${listOfRoutesTimestamp}`)
+  .end(
+    (err: Error, res: request.Response) =>
     {
-      console.error(err);
-    }
-    else
-    {
-      try
-      {
-        if ( res.body.data.routes.length > 0 )
-        {
-          localStorage.setItem('list-of-routes', JSON.stringify(res.body.data.routes));
-          localStorage.setItem('list-of-routes-timestamp', JSON.stringify(res.body.data.timestamp));
-        }
-        else
-        {
-          res.body.data.routes = JSON.parse( localStorage.getItem('list-of-routes') || '[]');
-        }
-        Store.dispatch( ActionCreators.loadListOfRoutes(res.body.data.routes) );
-      }
-      catch (err)
+      if ( err )
       {
         console.error(err);
       }
+      else
+      {
+        if ( res.body.data.routes.length > 0 )
+        {
+          if ( res.body.data.timestamp > listOfRoutesTimestamp )
+          { // if not, don't need to update - it's the same
+            localForage.setItem('list-of-routes', res.body.data.routes);
+            localForage.setItem('list-of-routes-timestamp', res.body.data.timestamp);
+          }
+          Store.dispatch( ActionCreators.loadListOfRoutes(res.body.data.routes) );
+        }
+        else
+        {
+          localForage.getItem('list-of-routes')
+          .then(
+            (routes: ListMarsh []) =>
+            {
+              Store.dispatch( ActionCreators.loadListOfRoutes(routes || []) );
+            }
+          )
+          .catch(
+            (err: Error) =>
+            {
+              console.error(err, 'reading list of routes from localForage');
+              Store.dispatch( ActionCreators.loadListOfRoutes([]) );
+            }
+          );
+        }
+      }
     }
-  }
-);
+  );
+}
 
 
 var appWrapperStyle =
