@@ -81,12 +81,27 @@ function updateVehicle(changes: StateChanges)
       removeMarker.call( this, code, graph );
     }
   }
+
+  Store.dispatch( ActionCreators.updateState(this._state) );
 }
 
 _Map.prototype.removeVehicle =
 function removeVehicle(busCode: string)
 {
-  console.log(busCode);
+  for ( var graph of Object.keys(this._state[busCode]) )
+  {
+    this._map.removeLayer( this._state[busCode][graph].marker );
+  }
+  try
+  {
+    delete this._state[busCode];
+  }
+  catch (err)
+  {
+    console.error(err, 'removing vehicle markers');
+  }
+
+  Store.dispatch( ActionCreators.updateState(this._state) );
 }
 
 const Map: iMap = new _Map();

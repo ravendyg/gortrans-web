@@ -5,6 +5,8 @@ import { Socket } from './data-provider';
 import { ActionCreators } from './action-creators';
 import { Store } from './store';
 
+import {Map} from './map';
+
 export function addBus(bus: VehicleMeta)
 {
   Store.dispatch( ActionCreators.addBusToList(bus) );
@@ -15,4 +17,5 @@ export function removeBus(bus: VehicleMeta)
 {
   Store.dispatch( ActionCreators.removeBusFromList(bus) );
   Socket.removeBusListener(bus.code);
+  Map.removeVehicle(bus.code);
 };
