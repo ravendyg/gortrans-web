@@ -14,7 +14,7 @@ module.exports =
 {
     entry:
     {
-    //   vendor: './src/vendor.tsx',
+      // vendor: './src/vendor.tsx',
       app: './src/app.tsx'
     },
     output:
@@ -79,5 +79,11 @@ module.exports =
                 drop_console: true
             }
         }),
-    ]
+    ],
+    externals: {
+        "react": "React",
+        "react-dom": "ReactDOM",
+        // 'react-router': 'ReactRouter',
+        'redux': 'Redux'
+    },
 }
