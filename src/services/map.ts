@@ -82,7 +82,7 @@ function addVehicle(state: State)
   {
     if ( !this._state[busCode] )
     {
-      this._state[busCode] = {};
+      this._state[busCode] = { vh: {} };
     }
     for ( graph of Object.keys(state[busCode]) )
     {
@@ -105,27 +105,13 @@ function addVehicle(state: State)
         break;
       }
     }
-    Object.defineProperty(
-      this._state[busCode],
-      'line',
-      {
-        enumerable: false,
-        value: <L.Polyline> L.polyline( latLng, { color } )
-      }
-    );
-    Object.defineProperty(
-      this._state[busCode],
-      'color',
-      {
-        enumerable: false,
-        value: color
-      }
-    );
+    this._state[busCode].line = <L.Polyline> L.polyline( latLng, { color } );
+    this._state[busCode].color = color;
     this._state[busCode].line.addTo( this._map );
   }
 
   // send new state to the store
-  Store.dispatch( ActionCreators.updateState(this._state) );
+  Store.dispatch( ActionCreators.updateState(this._state[busCode]) );
 }
 
 _Map.prototype.updateVehicle =
@@ -165,10 +151,10 @@ function removeVehicle(busCode: string)
 {
   if ( this._state[busCode] )
   {
-    var graphs = Object.keys(this._state[busCode]);
+    var graphs = Object.keys(this._state[busCode].vh);
     for ( var graph of graphs )
     {
-      this._map.removeLayer( this._state[busCode][graph].marker );
+      this._map.removeLayer( this._state[busCode].vh[graph].marker );
     }
     try
     {
@@ -197,7 +183,7 @@ function createMarker(data: busData, code: string, graph: string)
   marker = L.marker([data.lat, data.lng]).bindPopup(data.graph + ': ' + data.title);
   marker.addTo(this._map);
 
-  this._state[code][graph] =
+  this._state[code].vh[graph] =
   {
     data,
     marker
@@ -206,16 +192,16 @@ function createMarker(data: busData, code: string, graph: string)
 
 function updateMarker(data: busData, code: string, graph: string)
 {
-  this._state[code][graph].marker.setLatLng([data.lat, data.lng]);
-  this._state[code][graph].data = data;
+  this._state[code].vh[graph].marker.setLatLng([data.lat, data.lng]);
+  this._state[code].vh[graph].data = data;
 }
 
 function removeMarker(data: busData, code: string, graph: string)
 {
   try
   {
-    this._map.removeLayer( this._state[code][graph].marker );
-    delete this._state[code][graph];
+    this._map.removeLayer( this._state[code].vh[graph].marker );
+    delete this._state[code].vh[graph];
   }
   catch (err)
   {

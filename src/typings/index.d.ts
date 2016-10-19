@@ -96,14 +96,21 @@ declare type busData =
 
 declare type StateWithMarkers =
 {
-  [busCode: string]:
+  [busCode: string]: MapStateUnit
+};
+
+declare type MapStateUnit =
+{
+  vh:
   {
     [graph: string]:
     {
       data: busData,
       marker: L.Marker
-    }
+    },
   }
+  line: L.Polyline,
+  color: string
 };
 
 declare type State =
