@@ -77,7 +77,7 @@ function makeRequestForBasicData(routes:
         if ( res.body.trasses.timestamp > trasses.timestamp )
         { // if not, don't need to update - it's the same
           localForage.setItem('list-of-trasses', res.body.trasses);
-          Store.dispatch( ActionCreators.loadListOfRoutes(res.body.trasses.trasses) );
+          Store.dispatch( ActionCreators.loadListOfTrasses(res.body.trasses.trasses) );
         }
         else
         {

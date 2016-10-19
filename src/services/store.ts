@@ -66,7 +66,7 @@ const dataStorage =
         trasses: state.trasses,
         typeNames: state.typeNames,
         vehicles: {}
-       };
+      };
 
       // create lists
       out = mapVehiclesIntoCodes(action.payload.routes, out, 'bus', 0);
@@ -74,7 +74,7 @@ const dataStorage =
       out = mapVehiclesIntoCodes(action.payload.routes, out, 'tram', 2);
       out = mapVehiclesIntoCodes(action.payload.routes, out, 'small', 7);
 
-      return out;
+    return out;
 
     case Actions.LOAD_LIST_OF_TRASSES:
       var out: dataStorageStore =
@@ -84,9 +84,21 @@ const dataStorage =
         typeNames: state.typeNames,
         vehicles: state.vehicles
       };
-console.log(out);
 
-      return out;
+      for ( var busCode of Object.keys(action.payload.trasses) )
+      {
+        try
+        {
+          out.trasses[busCode] = JSON.parse( action.payload.trasses[busCode] ).trasses[0].r[0].u;
+        }
+        catch (err)
+        {
+          console.error(err, 'parsing trass');
+          out.trasses[busCode] = [];
+        }
+      }
+
+    return out;
 
     case Actions.UPDATE_STATE:
       var out: dataStorageStore =
@@ -96,10 +108,11 @@ console.log(out);
         typeNames: state.typeNames,
         vehicles: action.payload.state
        };
-      return out;
+
+    return out;
 
     default:
-      return state;
+    return state;
   }
 };
 
