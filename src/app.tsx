@@ -26,25 +26,36 @@ require('./app.less');
 Socket.connect();
 Map.create();
 
-localForage.getItem('list-of-routes-timestamp')
+Promise.all([
+  localForage.getItem('list-of-routes'),
+  localForage.getItem('list-of-trasses'),
+])
 .then(
-  (listOfRoutesTimestamp: number) =>
+  ([routes, trasses]: any []) =>
   {
-    makeRequestForBasicData(listOfRoutesTimestamp || 0);
+    makeRequestForBasicData(
+      routes || {routes: [], timestamp: 0},
+      trasses || {trasses: {}, timestamp: 0});
   }
 )
 .catch(
   (err: Error) =>
   {
     console.error(err, 'get timestamp from localForage');
-    makeRequestForBasicData(0);
+    makeRequestForBasicData(
+      {routes: [], timestamp: 0},
+      {trasses: {}, timestamp: 0}
+    );
   }
 );
 
-function makeRequestForBasicData(listOfRoutesTimestamp: number)
+function makeRequestForBasicData(routes:
+  { routes: ListMarsh [], timestamp: number },
+  trasses: { trasses: { [busCode: string]: string }, timestamp: number }
+)
 {
   request
-  .get(`${config.URL}${config.GET_LIST_OF_ROUTES}?timestamp=${listOfRoutesTimestamp}`)
+  .get(`${config.URL}${config.SYNC_ROUTE}?routestimestamp=${routes.timestamp}&trassestimestamp=${trasses.timestamp}`)
   .end(
     (err: Error, res: request.Response) =>
     {
@@ -54,31 +65,23 @@ function makeRequestForBasicData(listOfRoutesTimestamp: number)
       }
       else
       {
-        if ( res.body.data.routes.length > 0 )
-        {
-          if ( res.body.data.timestamp > listOfRoutesTimestamp )
-          { // if not, don't need to update - it's the same
-            localForage.setItem('list-of-routes', res.body.data.routes);
-            localForage.setItem('list-of-routes-timestamp', res.body.data.timestamp);
-          }
-          Store.dispatch( ActionCreators.loadListOfRoutes(res.body.data.routes) );
+        if ( res.body.routes.timestamp > routes.timestamp )
+        { // if not, don't need to update - it's the same
+          localForage.setItem('list-of-routes', res.body.routes);
+          Store.dispatch( ActionCreators.loadListOfRoutes(res.body.routes.routes) );
         }
         else
         {
-          localForage.getItem('list-of-routes')
-          .then(
-            (routes: ListMarsh []) =>
-            {
-              Store.dispatch( ActionCreators.loadListOfRoutes(routes || []) );
-            }
-          )
-          .catch(
-            (err: Error) =>
-            {
-              console.error(err, 'reading list of routes from localForage');
-              Store.dispatch( ActionCreators.loadListOfRoutes([]) );
-            }
-          );
+          Store.dispatch( ActionCreators.loadListOfRoutes(routes.routes) );
+        }
+        if ( res.body.trasses.timestamp > trasses.timestamp )
+        { // if not, don't need to update - it's the same
+          localForage.setItem('list-of-trasses', res.body.trasses);
+          Store.dispatch( ActionCreators.loadListOfRoutes(res.body.trasses.trasses) );
+        }
+        else
+        {
+          Store.dispatch( ActionCreators.loadListOfTrasses(trasses.trasses) );
         }
       }
     }

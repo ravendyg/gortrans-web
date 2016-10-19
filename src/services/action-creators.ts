@@ -12,6 +12,7 @@ export enum Actions
   DISCONNECTED = 5,
 
   LOAD_LIST_OF_ROUTES = 6,
+  LOAD_LIST_OF_TRASSES = 8,
 
   UPDATE_STATE = 7,
 };
@@ -23,6 +24,14 @@ export const ActionCreators =
     return {
       type: Actions.LOAD_LIST_OF_ROUTES,
       payload: { routes }
+    };
+  },
+
+  loadListOfTrasses: (trasses: {[busCode: string]: string}) =>
+  {
+    return {
+      type: Actions.LOAD_LIST_OF_TRASSES,
+      payload: { trasses }
     };
   },
 

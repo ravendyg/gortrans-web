@@ -44,6 +44,7 @@ const dataStorage =
 ( state: dataStorageStore =
  {
    routes: {},
+   trasses: {},
    typeNames:
    {
      'bus':     {id: 0, name: 'Автобусы'},
@@ -62,6 +63,7 @@ const dataStorage =
       var out: dataStorageStore =
       {
         routes: {},
+        trasses: state.trasses,
         typeNames: state.typeNames,
         vehicles: {}
        };
@@ -74,10 +76,23 @@ const dataStorage =
 
       return out;
 
+    case Actions.LOAD_LIST_OF_TRASSES:
+      var out: dataStorageStore =
+      {
+        routes: state.routes,
+        trasses: {},
+        typeNames: state.typeNames,
+        vehicles: state.vehicles
+      };
+console.log(out);
+
+      return out;
+
     case Actions.UPDATE_STATE:
       var out: dataStorageStore =
       {
         routes: state.routes,
+        trasses: state.trasses,
         typeNames: state.typeNames,
         vehicles: action.payload.state
        };

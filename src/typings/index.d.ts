@@ -57,7 +57,8 @@ declare type dataStorageStore =
       name: string
     }
   },
-  vehicles: StateWithMarkers
+  vehicles: StateWithMarkers,
+  trasses: { [busCode: string]: Point []}
 };
 
 declare type VehicleMeta =
@@ -136,3 +137,14 @@ interface iMap
   updateVehicle(changes: StateChanges): void;
   removeVehicle(busCode: string): void;
 }
+
+declare type Point =
+{
+  lat: number,
+  lng: number
+};
+
+// declare type Trass =
+// {
+
+// }
