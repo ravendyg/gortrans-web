@@ -63,22 +63,29 @@ function _initMap(lat: number, lng: number)
 _Map.prototype.addVehicle =
 function addVehicle(state: State)
 {
-  var code: string, graph: string;
+  var busCode: string, graph: string;
 
-  for ( code of Object.keys(state) )
+  for ( busCode of Object.keys(state) )
   {
-    if ( !this._state[code] )
+    if ( !this._state[busCode] )
     {
-      this._state[code] = {};
+      this._state[busCode] = {};
     }
-    for ( graph of Object.keys(state[code]) )
+    for ( graph of Object.keys(state[busCode]) )
     {
       createMarker.call(
-        this, state[code][graph],
-        code, graph
+        this, state[busCode][graph],
+        busCode, graph
       );
     }
+
+    // draw path
+    var trassPoints: Point [] = (Store.getState() as ReduxState).dataStorage.trasses[busCode];
+    var latLng: [number, number] [] = trassPoints.map( e => <[number, number]>[e.lat, e.lng]);
+    this._state[busCode].line = <L.Polyline> L.polyline( latLng );
+    this._state[busCode].line.addTo( this._map );
   }
+
   // send new state to the store
   Store.dispatch( ActionCreators.updateState(this._state) );
 }
