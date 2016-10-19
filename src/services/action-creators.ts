@@ -51,7 +51,7 @@ export const ActionCreators =
     }
   },
 
-  updateState: (state: MapStateUnit) =>
+  updateState: (state: StateWithMarkers) =>
   {
     return {
       type: Actions.UPDATE_STATE,

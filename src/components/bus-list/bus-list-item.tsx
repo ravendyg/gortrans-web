@@ -62,9 +62,10 @@ export class BusListItem extends React.Component <BusListItemProps, BusListItemS
         imgSrc = smaImg;
       break;
     }
+    // let color = 'color: ' + this.props.color
     return(
       <div className="item">
-        <div className="number" onClick={this.props.clickCb}>
+        <div className="number" onClick={this.props.clickCb} style={{color: this.props.item.color}}>
           <span>{this.props.item.title}</span>
         </div>
         <div className="image" onClick={this.props.clickCb}>

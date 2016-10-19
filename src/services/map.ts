@@ -111,7 +111,7 @@ function addVehicle(state: State)
   }
 
   // send new state to the store
-  Store.dispatch( ActionCreators.updateState(this._state[busCode]) );
+  Store.dispatch( ActionCreators.updateState(this._state) );
 }
 
 _Map.prototype.updateVehicle =

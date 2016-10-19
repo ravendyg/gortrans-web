@@ -64,7 +64,8 @@ declare type dataStorageStore =
 declare type VehicleMeta =
 {
   title: string,
-  code: string
+  code: string,
+  color: string
 };
 
 interface FormControlEventTarget extends EventTarget

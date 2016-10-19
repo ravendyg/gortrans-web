@@ -16,10 +16,19 @@ const busList =
           ? state.slice(1)
           : state
           ;
-      return temp.concat( action.payload.bus );
+    return temp.concat( action.payload.bus );
 
     case Actions.REMOVE_BUS_FROM_LIST:
       return state.filter( e => e.code !== action.payload.bus.code );
+
+    case Actions.UPDATE_STATE:
+      var vehicle;
+      var newState = [];
+      for ( vehicle of state )
+      {
+        newState.push( Object['assign'](vehicle, { color: action.payload.state[vehicle.code].color }) );
+      }
+    return newState;
 
     default:
       return state;
@@ -129,7 +138,8 @@ function mapVehiclesIntoCodes(
   {
     target.routes[vehicle].push({
       code: [type+1, way.marsh, 'W', way.name].join('-'),
-      title: way.name
+      title: way.name,
+      color: 'black'
     });
   }
 
