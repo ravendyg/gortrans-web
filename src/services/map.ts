@@ -15,6 +15,35 @@ function _Map()
 _Map.prototype.create =
 function create()
 {
+  if ( navigator.geolocation )
+  {
+    navigator.geolocation.getCurrentPosition(
+      (position: Position) =>
+      {
+        _initMap.call(this,
+          position.coords.latitude,
+          position.coords.longitude
+        );
+      },
+      (err: PositionError) =>
+      {
+        console.error(err, 'getCurrentPosition');
+        _initMap.call(this, 54.908593335436926, 83.0291748046875);
+      },
+      {
+        enableHighAccuracy: false,
+        timeout: 3000
+      }
+    );
+  }
+  else
+  { // fallback
+    _initMap.call(this, 54.908593335436926, 83.0291748046875);
+  }
+}
+
+function _initMap(lat: number, lng: number)
+{
   var southWest = L.latLng(30, 10),
     northEast = L.latLng(80, 200),
     bounds = L.latLngBounds(southWest, northEast);
@@ -25,9 +54,10 @@ function create()
         minZoom: 4,
         maxBounds: bounds
       })
-    .setView({lat: 54.908593335436926, lng: 83.0291748046875}, 14);
+    .setView({lat, lng}, 12);
 
   L.tileLayer['provider']('OpenStreetMap.HOT').addTo(this._map);
+  document.querySelector('.leaflet-control-zoom').remove();
 }
 
 _Map.prototype.addVehicle =
@@ -110,7 +140,6 @@ function removeVehicle(busCode: string)
 const Map: iMap = new _Map();
 
 export { Map };
-// document.querySelector('.leaflet-control-zoom').remove();
 
 
 function createMarker(data: busData, code: string, graph: string)
