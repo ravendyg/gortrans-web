@@ -5,30 +5,53 @@ import {combineReducers, createStore} from 'redux';
 import {config} from '../config';
 import {Actions} from './action-creators';
 
+const allColors =
+[
+  '#B71C1C', '#311B92', '#004D40', '#827717', '#BF360C'
+];
+
+var availableColors = [];
+for ( let color of allColors )
+{
+  availableColors.push( color );
+}
+
 const busList =
 (state: VehicleMeta [] = [], action: ActionType) =>
 {
+  var newState = [];
+  var color;
+  var i;
+
   switch( action.type )
   {
     case Actions.ADD_BUS_TO_LIST:
-      let temp =
-        state.length >= config.NUMBER_OF_BUSES_LIMIT
-          ? state.slice(1)
-          : state
-          ;
-    return temp.concat( action.payload.bus );
+      if ( state.length >= config.NUMBER_OF_BUSES_LIMIT )
+      { // unshift and reuse color
+        color = state[0].color;
+        newState = state.slice(1);
+      }
+      else
+      {
+        // select color
+        for ( color of allColors )
+        {
+          i = availableColors.indexOf(color);
+          if ( i !== -1 )
+          {
+            availableColors = availableColors.slice(0,i).concat( availableColors.slice(i+1) );
+            break;
+          }
+        }
+        newState = state.slice(0);
+      }
+      newState.push( Object['assign']({}, action.payload.bus, {color}) );
+    return newState;
 
     case Actions.REMOVE_BUS_FROM_LIST:
-      return state.filter( e => e.code !== action.payload.bus.code );
-
-    case Actions.UPDATE_STATE:
-      var vehicle;
-      var newState = [];
-      for ( vehicle of state )
-      {
-        newState.push( Object['assign'](vehicle, { color: action.payload.state[vehicle.code].color }) );
-      }
-    return newState;
+      color = state['find']( e => e.code === action.payload.bus.code ).color;
+      availableColors.push( color );
+    return state.filter( e => e.code !== action.payload.bus.code );
 
     default:
       return state;

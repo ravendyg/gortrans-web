@@ -6,17 +6,6 @@ import {Store} from './store';
 
 require("./map.less");
 
-const allColors =
-[
-  '#B71C1C', '#311B92', '#004D40', '#827717', '#BF360C'
-];
-
-var availableColors = [];
-for ( let color of allColors )
-{
-  availableColors.push( color );
-}
-
 // display map
 function _Map()
 {
@@ -77,6 +66,9 @@ function addVehicle(state: State)
   var busCode: string, graph: string;
   var color: string;
   var i: number;
+  var selectedVehicle: VehicleMeta;
+
+  var listOfSelectedVehicles = (Store.getState() as ReduxState).busList;
 
   for ( busCode of Object.keys(state) )
   {
@@ -96,12 +88,11 @@ function addVehicle(state: State)
     var trassPoints: Point [] = (Store.getState() as ReduxState).dataStorage.trasses[busCode];
     var latLng: [number, number] [] = trassPoints.map( e => <[number, number]>[e.lat, e.lng]);
     // select color
-    for ( color of allColors )
+    for ( selectedVehicle of listOfSelectedVehicles )
     {
-      i = availableColors.indexOf(color);
-      if ( i !== -1 )
+      if ( selectedVehicle.code === busCode )
       {
-        availableColors = availableColors.slice(0,i).concat( availableColors.slice(i+1) );
+        color = selectedVehicle.color;
         break;
       }
     }
@@ -111,6 +102,7 @@ function addVehicle(state: State)
   }
 
   // send new state to the store
+
   Store.dispatch( ActionCreators.updateState(this._state) );
 }
 
@@ -159,7 +151,7 @@ function removeVehicle(busCode: string)
     try
     {
       this._map.removeLayer( this._state[busCode].line );
-      availableColors.push( this._state[busCode].color );
+      // availableColors.push( this._state[busCode].color );
       delete this._state[busCode];
     }
     catch (err)
