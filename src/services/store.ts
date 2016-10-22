@@ -155,7 +155,7 @@ function mapVehiclesIntoCodes(
   type: number
 ): dataStorageStore
 {
-  var list: ListMarsh = data['find']( e => e.type === type);
+  var list: ListMarsh = data['find']( e => e.type === type) || { ways: [] };
   target.routes[vehicle] = [];
   for ( let way of list.ways )
   {
