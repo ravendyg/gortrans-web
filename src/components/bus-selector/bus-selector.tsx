@@ -10,6 +10,7 @@ import { browserHistory } from 'react-router';
 import {Store} from './../../services/store';
 
 import {BusGroup} from './bus-group';
+import { BackBtn } from './../back-btn';
 
 require('./bus-selector.less');
 
@@ -116,9 +117,14 @@ export class BusSelector extends React.Component <BusSelectorProps, BusSelectorS
 
   render()
   {
+    let backBtn = navigator.userAgent.toLowerCase().match(/(iphone)/)
+      ? <BackBtn action={this.closeMenu.bind(this)} />
+      : ''
+      ;
     return(
       <div className="bus-selector-wrapper">
         <div className={this.state.className}>
+          {backBtn}
           <input
             className="search-input"
             type="number"
