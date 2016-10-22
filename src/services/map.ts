@@ -189,8 +189,14 @@ function createMarker(data: busData, code: string, graph: string)
 {
   var marker: L.Marker;
   // make better popup
-  marker = L.marker([data.lat, data.lng]).bindPopup(data.graph + ': ' + data.title);
+  marker =
+    L.marker([data.lat, data.lng])
+    .bindPopup(data.graph + ': ' + data.title)
+    .bindTooltip(data.title, {permanent: true})
+    ;
+
   marker.addTo(this._map);
+  marker.openTooltip();
 
   this._state[code].vh[graph] =
   {
