@@ -4,6 +4,7 @@
 import * as React from 'react';
 
 import {Store} from './../../services/store';
+import { Map } from './../../services/map';
 
 import { BusListItem } from './bus-list-item';
 
@@ -48,9 +49,8 @@ export class BusList extends React.Component <BusListProps, BusListState>
 
   public zoomToRoot(busCode: string)
   {
-    console.log(busCode);
+    Map.zoomToBusRote(busCode);
   }
-
 
   render()
   {

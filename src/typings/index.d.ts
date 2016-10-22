@@ -144,6 +144,7 @@ interface iMap
   addVehicle(state: State): void;
   updateVehicle(changes: StateChanges): void;
   removeVehicle(busCode: string): void;
+  zoomToBusRote(busCode: string): void;
 }
 
 declare type Point =

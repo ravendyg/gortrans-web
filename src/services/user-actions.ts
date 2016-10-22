@@ -21,6 +21,10 @@ export function addBus(bus: VehicleMeta)
       Map.removeVehicle( currentBusList[0].code );
     }
   }
+  else
+  {
+    Map.zoomToBusRote(bus.code);
+  }
 };
 
 export function removeBus(bus: VehicleMeta)

@@ -62,7 +62,7 @@ function _initMap(lat: number, lng: number)
 
 _Map.prototype.addVehicle =
 function addVehicle(state: State)
-{
+{ // state contains only one bus - the one that has been added
   var busCode: string, graph: string;
   var color: string;
   var i: number;
@@ -75,37 +75,41 @@ function addVehicle(state: State)
     if ( !this._state[busCode] )
     {
       this._state[busCode] = { vh: {} };
-    }
-    for ( graph of Object.keys(state[busCode]) )
-    {
-      createMarker.call(
-        this, state[busCode][graph],
-        busCode, graph
-      );
-    }
-
-    // draw path
-    var trassPoints: Point [] = (Store.getState() as ReduxState).dataStorage.trasses[busCode];
-    var latLng: [number, number] [] =
-      (trassPoints || [])
-      .map( e => <[number, number]>[e.lat, e.lng]);
-    // select color
-    for ( selectedVehicle of listOfSelectedVehicles )
-    {
-      if ( selectedVehicle.code === busCode )
+      for ( graph of Object.keys(state[busCode]) )
       {
-        color = selectedVehicle.color;
-        break;
+        createMarker.call(
+          this, state[busCode][graph],
+          busCode, graph
+        );
       }
+
+      // draw path
+      var trassPoints: Point [] = (Store.getState() as ReduxState).dataStorage.trasses[busCode];
+      var latLng: [number, number] [] =
+        (trassPoints || [])
+        .map( e => <[number, number]>[e.lat, e.lng]);
+      // select color
+      for ( selectedVehicle of listOfSelectedVehicles )
+      {
+        if ( selectedVehicle.code === busCode )
+        {
+          color = selectedVehicle.color;
+          break;
+        }
+      }
+      this._state[busCode].line = <L.Polyline> L.polyline( latLng, { color } );
+      this._state[busCode].color = color;
+      Store.dispatch( ActionCreators.updateState(this._state) );
+
+      this._state[busCode].line.addTo( this._map );
     }
-    this._state[busCode].line = <L.Polyline> L.polyline( latLng, { color } );
-    this._state[busCode].color = color;
-    this._state[busCode].line.addTo( this._map );
+
+    setTimeout(
+      () => { this.zoomToBusRote(busCode); },
+      50
+    );
+
   }
-
-  // send new state to the store
-
-  Store.dispatch( ActionCreators.updateState(this._state) );
 }
 
 _Map.prototype.updateVehicle =
@@ -162,6 +166,17 @@ function removeVehicle(busCode: string)
     }
 
     Store.dispatch( ActionCreators.updateState(this._state) );
+  }
+}
+
+_Map.prototype.zoomToBusRote =
+function zoomToBusRote(busCode: string)
+{
+  var buses = (Store.getState() as ReduxState).dataStorage.vehicles;
+  if ( buses[busCode] && buses[busCode].line )
+  {
+    var bounds = buses[busCode].line.getBounds();
+    (this._map as L.Map).fitBounds(bounds, {});
   }
 }
 
