@@ -7,7 +7,7 @@ import {Actions} from './action-creators';
 
 const allColors =
 [
-  '#B71C1C', '#311B92', '#004D40', '#827717', '#BF360C'
+  '#B71C1C', '#039BE5', '#311B92', '#004D40', '#827717'
 ];
 
 var availableColors = [];

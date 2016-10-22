@@ -86,7 +86,9 @@ function addVehicle(state: State)
 
     // draw path
     var trassPoints: Point [] = (Store.getState() as ReduxState).dataStorage.trasses[busCode];
-    var latLng: [number, number] [] = trassPoints.map( e => <[number, number]>[e.lat, e.lng]);
+    var latLng: [number, number] [] =
+      (trassPoints || [])
+      .map( e => <[number, number]>[e.lat, e.lng]);
     // select color
     for ( selectedVehicle of listOfSelectedVehicles )
     {
@@ -188,7 +190,7 @@ function updateMarker(data: busData, code: string, graph: string)
   this._state[code].vh[graph].data = data;
 }
 
-function removeMarker(data: busData, code: string, graph: string)
+function removeMarker(code: string, graph: string)
 {
   try
   {
