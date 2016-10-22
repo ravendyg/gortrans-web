@@ -87,7 +87,7 @@ declare type busData =
   direction: string,
   lat: number,
   lng: number,
-  time_nav: number,
+  time_nav: string,
   azimuth: number,
   rasp: string,
   speed: number,

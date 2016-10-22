@@ -191,7 +191,7 @@ function createMarker(data: busData, code: string, graph: string)
   // make better popup
   marker =
     L.marker([data.lat, data.lng])
-    .bindPopup(data.graph + ': ' + data.title)
+    .bindPopup( createPopupCode(data) )
     .bindTooltip(data.title, {permanent: true})
     ;
 
@@ -222,4 +222,48 @@ function removeMarker(code: string, graph: string)
   {
     console.error(err, 'removing marker');
   }
+}
+
+function createPopupCode(data: busData): string
+{
+  var type, stopTime, stopName;
+  switch (data.id_typetr)
+  {
+    case '2':
+      type = 'Троллейбус';
+    break;
+
+    case '3':
+      type = 'Трамвай';
+    break;
+
+    case '8':
+      type = 'Маршрутное такси';
+    break;
+
+    default:
+      type = 'Автобус';
+  }
+  var stops = data.rasp.split('|').filter(entity);
+  var table = '<table><tbody>';
+
+  for ( var stop of stops )
+  {
+    [stopTime, stopName] = stop.split('+');
+    table += `<tr><td>${stopTime}</td><td class="popup-table-stop-name">${stopName}</td></tr>`;
+  }
+  table += '</tbody></table>';
+
+  var text =
+    `<p class="popup-header">${type} №${data.title} (график ${data.graph})</p>
+    ${table}
+    <p class="popup-footer">${data.time_nav.split(' ')[1]} Скорость: ${data.speed} км/ч</p>
+    `;
+
+  return text;
+}
+
+function entity(e: any): any
+{
+  return e;
 }
