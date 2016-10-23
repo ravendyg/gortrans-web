@@ -84,38 +84,29 @@ const dataStorage =
      'tram':    {id: 2, name: 'Трамваи'},
      'small':   {id: 7, name: 'Маршрутки'}
    },
-   vehicles: {}
+   vehicles: {},
+   stops: {},
+   busStops: {}
   },
   action: ActionType
 ) =>
 {
+  var out: dataStorageStore = <dataStorageStore>{};
+  Object['assign'](out, state);
+
   switch( action.type )
   {
     case Actions.LOAD_LIST_OF_ROUTES:
-      var out: dataStorageStore =
-      {
-        routes: {},
-        trasses: state.trasses,
-        typeNames: state.typeNames,
-        vehicles: {}
-      };
-
+      Object['assign'](out, {routes: {}} );
       // create lists
       out = mapVehiclesIntoCodes(action.payload.routes, out, 'bus', 0);
       out = mapVehiclesIntoCodes(action.payload.routes, out, 'trolley', 1);
       out = mapVehiclesIntoCodes(action.payload.routes, out, 'tram', 2);
       out = mapVehiclesIntoCodes(action.payload.routes, out, 'small', 7);
-
     return out;
 
     case Actions.LOAD_LIST_OF_TRASSES:
-      var out: dataStorageStore =
-      {
-        routes: state.routes,
-        trasses: {},
-        typeNames: state.typeNames,
-        vehicles: state.vehicles
-      };
+      Object['assign'](out, {trasses: {}} );
 
       for ( var busCode of Object.keys(action.payload.trasses) )
       {
@@ -129,18 +120,14 @@ const dataStorage =
           out.trasses[busCode] = [];
         }
       }
-
     return out;
 
     case Actions.UPDATE_STATE:
-      var out: dataStorageStore =
-      {
-        routes: state.routes,
-        trasses: state.trasses,
-        typeNames: state.typeNames,
-        vehicles: action.payload.state
-       };
+      Object['assign'](out, {vehicles: action.payload.state} );
+    return out;
 
+    case Actions.LOAD_LIST_OF_STOPS:
+      Object['assign'](out, {stops: action.payload.stops, busStops: action.payload.busStops} );
     return out;
 
     default:

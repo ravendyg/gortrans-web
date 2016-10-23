@@ -58,7 +58,9 @@ declare type dataStorageStore =
     }
   },
   vehicles: StateWithMarkers,
-  trasses: { [busCode: string]: Point []}
+  trasses: { [busCode: string]: Point []},
+  stops: { [stopId: string]: Stop },
+  busStops: BusStops
 };
 
 declare type VehicleMeta =
@@ -157,3 +159,21 @@ declare type Point =
 // {
 
 // }
+
+
+declare type Stop =
+{
+  id: string,
+  n: string,
+  lat: number,
+  lng: number,
+  vehicles: {[busCode: string]: boolean}
+};
+
+declare type BusStops =
+{
+  [busCode: string]:
+  {
+    [stopId: string]: boolean
+  }
+};

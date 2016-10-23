@@ -13,8 +13,10 @@ export enum Actions
 
   LOAD_LIST_OF_ROUTES = 6,
   LOAD_LIST_OF_TRASSES = 8,
+  LOAD_LIST_OF_STOPS = 9,
 
   UPDATE_STATE = 7,
+
 };
 
 export const ActionCreators =
@@ -33,6 +35,18 @@ export const ActionCreators =
       type: Actions.LOAD_LIST_OF_TRASSES,
       payload: { trasses }
     };
+  },
+
+  loadListOfStops:
+  (
+    {stops, busStops}:
+    { stops: { [stopId: string]: Stop }, busStops: BusStops}
+  ) =>
+  {
+    return {
+      type: Actions.LOAD_LIST_OF_STOPS,
+      payload: { stops, busStops }
+    }
   },
 
   addBusToList: (bus: VehicleMeta) =>

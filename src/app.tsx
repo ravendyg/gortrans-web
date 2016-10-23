@@ -29,13 +29,16 @@ Map.create();
 Promise.all([
   localForage.getItem('list-of-routes'),
   localForage.getItem('list-of-trasses'),
+  localForage.getItem('list-of-stops')
 ])
 .then(
-  ([routes, trasses]: any []) =>
+  ([routes, trasses, stopsData]: any []) =>
   {
     makeRequestForBasicData(
       routes || {routes: [], timestamp: 0},
-      trasses || {trasses: {}, timestamp: 0});
+      trasses || {trasses: {}, timestamp: 0},
+      stopsData || {stops: {}, busStops: {}, timestamp: 0 }
+    );
   }
 )
 .catch(
@@ -44,14 +47,16 @@ Promise.all([
     console.error(err, 'get timestamp from localForage');
     makeRequestForBasicData(
       {routes: [], timestamp: 0},
-      {trasses: {}, timestamp: 0}
+      {trasses: {}, timestamp: 0},
+      {stops: {}, busStops: {}, timestamp: 0}
     );
   }
 );
 
-function makeRequestForBasicData(routes:
-  { routes: ListMarsh [], timestamp: number },
-  trasses: { trasses: { [busCode: string]: string }, timestamp: number }
+function makeRequestForBasicData(
+  routes: { routes: ListMarsh [], timestamp: number },
+  trasses: { trasses: { [busCode: string]: string }, timestamp: number },
+  stopsData: { stops: { [stopId: string]: Stop }, busStops: BusStops, timestamp: number }
 )
 {
   request
@@ -74,6 +79,7 @@ function makeRequestForBasicData(routes:
         {
           Store.dispatch( ActionCreators.loadListOfRoutes(routes.routes) );
         }
+
         if ( res.body.trasses.timestamp > trasses.timestamp )
         { // if not, don't need to update - it's the same
           localForage.setItem('list-of-trasses', res.body.trasses);
@@ -82,6 +88,16 @@ function makeRequestForBasicData(routes:
         else
         {
           Store.dispatch( ActionCreators.loadListOfTrasses(trasses.trasses) );
+        }
+
+        if ( res.body.stopsData.timestamp > stopsData.timestamp )
+        { // if not, don't need to update - it's the same
+          localForage.setItem('list-of-stops', res.body.stopsData);
+          Store.dispatch( ActionCreators.loadListOfStops(res.body.stopsData) );
+        }
+        else
+        {
+          Store.dispatch( ActionCreators.loadListOfStops(res.body.stopsData) );
         }
       }
     }
