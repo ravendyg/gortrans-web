@@ -208,6 +208,7 @@ function createMarker(data: busData, code: string, graph: string)
 function updateMarker(data: busData, code: string, graph: string)
 {
   this._state[code].vh[graph].marker.setLatLng([data.lat, data.lng]);
+  this._state[code].vh[graph].marker.setPopupContent( createPopupCode(data) );
   this._state[code].vh[graph].data = data;
 }
 
