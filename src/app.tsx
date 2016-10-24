@@ -82,8 +82,11 @@ function makeRequestForBasicData(
 
         if ( res.body.trasses.timestamp > trasses.timestamp )
         { // if not, don't need to update - it's the same
-          localForage.setItem('list-of-trasses', res.body.trasses);
-          Store.dispatch( ActionCreators.loadListOfTrasses(res.body.trasses.trasses) );
+          Object['assign']( trasses.trasses, res.body.trasses.trasses );
+          trasses.timestamp = res.body.trasses.timestamp;
+
+          localForage.setItem('list-of-trasses', trasses);
+          Store.dispatch( ActionCreators.loadListOfTrasses(trasses.trasses) );
         }
         else
         {

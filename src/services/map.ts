@@ -6,6 +6,141 @@ import {Store} from './store';
 
 require("./map.less");
 
+var icons =
+{
+  '1-0': L.icon({
+    iconUrl: require('./../images/marker-icons/bus-0.png'),
+    iconAnchor: [5, 17]
+  }),
+  '1-45': L.icon({
+    iconUrl: require('./../images/marker-icons/bus-45.png'),
+    iconAnchor: [5, 17]
+  }),
+  '1-90': L.icon({
+    iconUrl: require('./../images/marker-icons/bus-90.png'),
+    iconAnchor: [5, 17]
+  }),
+  '1-135': L.icon({
+    iconUrl: require('./../images/marker-icons/bus-135.png'),
+    iconAnchor: [5, 17]
+  }),
+  '1-180': L.icon({
+    iconUrl: require('./../images/marker-icons/bus-180.png'),
+    iconAnchor: [5, 17]
+  }),
+  '1-225': L.icon({
+    iconUrl: require('./../images/marker-icons/bus-225.png'),
+    iconAnchor: [5, 17]
+  }),
+  '1-270': L.icon({
+    iconUrl: require('./../images/marker-icons/bus-270.png'),
+    iconAnchor: [5, 17]
+  }),
+  '1-315': L.icon({
+    iconUrl: require('./../images/marker-icons/bus-315.png'),
+    iconAnchor: [5, 17]
+  }),
+
+  '2-0': L.icon({
+    iconUrl: require('./../images/marker-icons/trolley-0.png'),
+    iconAnchor: [5, 17]
+  }),
+  '2-45': L.icon({
+    iconUrl: require('./../images/marker-icons/trolley-45.png'),
+    iconAnchor: [5, 17]
+  }),
+  '2-90': L.icon({
+    iconUrl: require('./../images/marker-icons/trolley-90.png'),
+    iconAnchor: [5, 17]
+  }),
+  '2-135': L.icon({
+    iconUrl: require('./../images/marker-icons/trolley-135.png'),
+    iconAnchor: [5, 17]
+  }),
+  '2-180': L.icon({
+    iconUrl: require('./../images/marker-icons/trolley-180.png'),
+    iconAnchor: [5, 17]
+  }),
+  '2-225': L.icon({
+    iconUrl: require('./../images/marker-icons/trolley-225.png'),
+    iconAnchor: [5, 17]
+  }),
+  '2-270': L.icon({
+    iconUrl: require('./../images/marker-icons/trolley-270.png'),
+    iconAnchor: [5, 17]
+  }),
+  '2-315': L.icon({
+    iconUrl: require('./../images/marker-icons/trolley-315.png'),
+    iconAnchor: [5, 17]
+  }),
+
+  '3-0': L.icon({
+    iconUrl: require('./../images/marker-icons/tram-0.png'),
+    iconAnchor: [5, 17]
+  }),
+  '3-45': L.icon({
+    iconUrl: require('./../images/marker-icons/tram-45.png'),
+    iconAnchor: [5, 17]
+  }),
+  '3-90': L.icon({
+    iconUrl: require('./../images/marker-icons/tram-90.png'),
+    iconAnchor: [5, 17]
+  }),
+  '3-135': L.icon({
+    iconUrl: require('./../images/marker-icons/tram-135.png'),
+    iconAnchor: [5, 17]
+  }),
+  '3-180': L.icon({
+    iconUrl: require('./../images/marker-icons/tram-180.png'),
+    iconAnchor: [5, 17]
+  }),
+  '3-225': L.icon({
+    iconUrl: require('./../images/marker-icons/tram-225.png'),
+    iconAnchor: [5, 17]
+  }),
+  '3-270': L.icon({
+    iconUrl: require('./../images/marker-icons/tram-270.png'),
+    iconAnchor: [5, 17]
+  }),
+  '3-315': L.icon({
+    iconUrl: require('./../images/marker-icons/tram-315.png'),
+    iconAnchor: [5, 17]
+  }),
+
+  '8-0': L.icon({
+    iconUrl: require('./../images/marker-icons/minibus-0.png'),
+    iconAnchor: [5, 17]
+  }),
+  '8-45': L.icon({
+    iconUrl: require('./../images/marker-icons/minibus-45.png'),
+    iconAnchor: [5, 17]
+  }),
+  '8-90': L.icon({
+    iconUrl: require('./../images/marker-icons/minibus-90.png'),
+    iconAnchor: [5, 17]
+  }),
+  '8-135': L.icon({
+    iconUrl: require('./../images/marker-icons/minibus-135.png'),
+    iconAnchor: [5, 17]
+  }),
+  '8-180': L.icon({
+    iconUrl: require('./../images/marker-icons/minibus-180.png'),
+    iconAnchor: [5, 17]
+  }),
+  '8-225': L.icon({
+    iconUrl: require('./../images/marker-icons/minibus-225.png'),
+    iconAnchor: [5, 17]
+  }),
+  '8-270': L.icon({
+    iconUrl: require('./../images/marker-icons/minibus-270.png'),
+    iconAnchor: [5, 17]
+  }),
+  '8-315': L.icon({
+    iconUrl: require('./../images/marker-icons/minibus-315.png'),
+    iconAnchor: [5, 17]
+  }),
+};
+
 // display map
 function _Map()
 {
@@ -189,10 +324,12 @@ function createMarker(data: busData, code: string, graph: string)
 {
   var marker: L.Marker;
   // make better popup
+
+  var azimuth = Math.floor( (Math.abs(+data.azimuth+22.5)) / 45 )*45 % 360;
   marker =
-    L.marker([data.lat, data.lng])
+    L.marker([data.lat, data.lng], {icon: icons[data.id_typetr+'-'+azimuth]})
     .bindPopup( createPopupCode(data) )
-    .bindTooltip(data.title, {permanent: true})
+    .bindTooltip(data.title, {permanent: true, direction: 'left'})
     ;
 
   marker.addTo(this._map);
@@ -207,7 +344,10 @@ function createMarker(data: busData, code: string, graph: string)
 
 function updateMarker(data: busData, code: string, graph: string)
 {
+  var azimuth = Math.floor( (Math.abs(+data.azimuth+22.5)) / 45 )*45 % 360;
+
   this._state[code].vh[graph].marker.setLatLng([data.lat, data.lng]);
+  this._state[code].vh[graph].marker.setIcon(icons[data.id_typetr+'-'+azimuth]);
   this._state[code].vh[graph].marker.setPopupContent( createPopupCode(data) );
   this._state[code].vh[graph].data = data;
 }
