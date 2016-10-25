@@ -15,6 +15,8 @@ export enum Actions
   LOAD_LIST_OF_TRASSES = 8,
   LOAD_LIST_OF_STOPS = 9,
 
+  RELOAD_STOPS = 10,
+
   UPDATE_STATE = 7,
 
 };
@@ -71,5 +73,15 @@ export const ActionCreators =
       type: Actions.UPDATE_STATE,
       payload: { state }
     }
-  }
+  },
+
+  reloadStops: () =>
+  {
+    return {
+      type: Actions.RELOAD_STOPS,
+      payload: {}
+    }
+  },
+
+
 };

@@ -29,10 +29,7 @@ function stopList(state: {[stopId: string]: Stop} = {}, action: ActionType)
 {
   switch ( action.type )
   {
-    case Actions.ADD_BUS_TO_LIST:
-    case Actions.REMOVE_BUS_FROM_LIST:
-      debugger;
-      // use the same logic of reconstructing list from scratches
+    case Actions.RELOAD_STOPS:
       var out = {};
       var buses = (Store.getState() as ReduxState).busList;
       var busStops = (Store.getState() as ReduxState).dataStorage.busStops;
@@ -49,7 +46,6 @@ function stopList(state: {[stopId: string]: Stop} = {}, action: ActionType)
           }
         }
       }
-      console.log(out);
     return out;
 
     default:

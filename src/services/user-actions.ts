@@ -14,6 +14,7 @@ export function addBus(bus: VehicleMeta)
   if ( !currentBusList['find'](e => e.code === bus.code) )
   { // not yet there
     Store.dispatch( ActionCreators.addBusToList(bus) );
+    Store.dispatch( ActionCreators.reloadStops() );
     Socket.addBusListener(bus.code);
     if ( currentBusList.length >= config.NUMBER_OF_BUSES_LIMIT )
     { // limit number of routes on the map at the same time
@@ -30,6 +31,7 @@ export function addBus(bus: VehicleMeta)
 export function removeBus(bus: VehicleMeta)
 {
   Store.dispatch( ActionCreators.removeBusFromList(bus) );
+  Store.dispatch( ActionCreators.reloadStops() );
   Socket.removeBusListener(bus.code);
   Map.removeVehicle(bus.code);
 };

@@ -164,14 +164,11 @@ declare type Point =
 
 declare type Stop =
 {
-  [id: string]:
-  {
-    id: string,
-    n: string,
-    lat: number,
-    lng: number,
-    vehicles: {[busCode: string]: boolean}
-  }
+  id: string,
+  n: string,
+  lat: number,
+  lng: number,
+  vehicles: {[busCode: string]: boolean}
 };
 
 declare type BusStops =

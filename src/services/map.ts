@@ -10,141 +10,188 @@ var icons =
 {
   '1-0': L.icon({
     iconUrl: require('./../images/marker-icons/bus-0.png'),
-    iconAnchor: [5, 17]
+    iconAnchor: [19, 17]
   }),
   '1-45': L.icon({
     iconUrl: require('./../images/marker-icons/bus-45.png'),
-    iconAnchor: [5, 17]
+    iconAnchor: [19, 17]
   }),
   '1-90': L.icon({
     iconUrl: require('./../images/marker-icons/bus-90.png'),
-    iconAnchor: [5, 17]
+    iconAnchor: [19, 17]
   }),
   '1-135': L.icon({
     iconUrl: require('./../images/marker-icons/bus-135.png'),
-    iconAnchor: [5, 17]
+    iconAnchor: [19, 17]
   }),
   '1-180': L.icon({
     iconUrl: require('./../images/marker-icons/bus-180.png'),
-    iconAnchor: [5, 17]
+    iconAnchor: [19, 17]
   }),
   '1-225': L.icon({
     iconUrl: require('./../images/marker-icons/bus-225.png'),
-    iconAnchor: [5, 17]
+    iconAnchor: [19, 17]
   }),
   '1-270': L.icon({
     iconUrl: require('./../images/marker-icons/bus-270.png'),
-    iconAnchor: [5, 17]
+    iconAnchor: [19, 17]
   }),
   '1-315': L.icon({
     iconUrl: require('./../images/marker-icons/bus-315.png'),
-    iconAnchor: [5, 17]
+    iconAnchor: [19, 17]
   }),
 
   '2-0': L.icon({
     iconUrl: require('./../images/marker-icons/trolley-0.png'),
-    iconAnchor: [5, 17]
+    iconAnchor: [19, 17]
   }),
   '2-45': L.icon({
     iconUrl: require('./../images/marker-icons/trolley-45.png'),
-    iconAnchor: [5, 17]
+    iconAnchor: [19, 17]
   }),
   '2-90': L.icon({
     iconUrl: require('./../images/marker-icons/trolley-90.png'),
-    iconAnchor: [5, 17]
+    iconAnchor: [19, 17]
   }),
   '2-135': L.icon({
     iconUrl: require('./../images/marker-icons/trolley-135.png'),
-    iconAnchor: [5, 17]
+    iconAnchor: [19, 17]
   }),
   '2-180': L.icon({
     iconUrl: require('./../images/marker-icons/trolley-180.png'),
-    iconAnchor: [5, 17]
+    iconAnchor: [19, 17]
   }),
   '2-225': L.icon({
     iconUrl: require('./../images/marker-icons/trolley-225.png'),
-    iconAnchor: [5, 17]
+    iconAnchor: [19, 17]
   }),
   '2-270': L.icon({
     iconUrl: require('./../images/marker-icons/trolley-270.png'),
-    iconAnchor: [5, 17]
+    iconAnchor: [19, 17]
   }),
   '2-315': L.icon({
     iconUrl: require('./../images/marker-icons/trolley-315.png'),
-    iconAnchor: [5, 17]
+    iconAnchor: [19, 17]
   }),
 
   '3-0': L.icon({
     iconUrl: require('./../images/marker-icons/tram-0.png'),
-    iconAnchor: [5, 17]
+    iconAnchor: [19, 17]
   }),
   '3-45': L.icon({
     iconUrl: require('./../images/marker-icons/tram-45.png'),
-    iconAnchor: [5, 17]
+    iconAnchor: [19, 17]
   }),
   '3-90': L.icon({
     iconUrl: require('./../images/marker-icons/tram-90.png'),
-    iconAnchor: [5, 17]
+    iconAnchor: [19, 17]
   }),
   '3-135': L.icon({
     iconUrl: require('./../images/marker-icons/tram-135.png'),
-    iconAnchor: [5, 17]
+    iconAnchor: [19, 17]
   }),
   '3-180': L.icon({
     iconUrl: require('./../images/marker-icons/tram-180.png'),
-    iconAnchor: [5, 17]
+    iconAnchor: [19, 17]
   }),
   '3-225': L.icon({
     iconUrl: require('./../images/marker-icons/tram-225.png'),
-    iconAnchor: [5, 17]
+    iconAnchor: [19, 17]
   }),
   '3-270': L.icon({
     iconUrl: require('./../images/marker-icons/tram-270.png'),
-    iconAnchor: [5, 17]
+    iconAnchor: [19, 17]
   }),
   '3-315': L.icon({
     iconUrl: require('./../images/marker-icons/tram-315.png'),
-    iconAnchor: [5, 17]
+    iconAnchor: [19, 17]
   }),
 
   '8-0': L.icon({
     iconUrl: require('./../images/marker-icons/minibus-0.png'),
-    iconAnchor: [5, 17]
+    iconAnchor: [19, 17]
   }),
   '8-45': L.icon({
     iconUrl: require('./../images/marker-icons/minibus-45.png'),
-    iconAnchor: [5, 17]
+    iconAnchor: [19, 17]
   }),
   '8-90': L.icon({
     iconUrl: require('./../images/marker-icons/minibus-90.png'),
-    iconAnchor: [5, 17]
+    iconAnchor: [19, 17]
   }),
   '8-135': L.icon({
     iconUrl: require('./../images/marker-icons/minibus-135.png'),
-    iconAnchor: [5, 17]
+    iconAnchor: [19, 17]
   }),
   '8-180': L.icon({
     iconUrl: require('./../images/marker-icons/minibus-180.png'),
-    iconAnchor: [5, 17]
+    iconAnchor: [19, 17]
   }),
   '8-225': L.icon({
     iconUrl: require('./../images/marker-icons/minibus-225.png'),
-    iconAnchor: [5, 17]
+    iconAnchor: [19, 17]
   }),
   '8-270': L.icon({
     iconUrl: require('./../images/marker-icons/minibus-270.png'),
-    iconAnchor: [5, 17]
+    iconAnchor: [19, 17]
   }),
   '8-315': L.icon({
     iconUrl: require('./../images/marker-icons/minibus-315.png'),
-    iconAnchor: [5, 17]
+    iconAnchor: [19, 17]
   }),
+
+  'stop': L.icon({
+    iconUrl: require('./../images/bus-stop.png'),
+    iconSize: L.point(30,30),
+    iconAnchor: [15, 15]
+  })
 };
 
 // display map
 function _Map()
 {
-  this._state = <StateWithMarkers> {};
+  this._state = {};
+  var oldStops: {[stopId: string]: Stop} = {};
+  var stopMarkers: {[stopId: string]: L.Marker } = {};
+
+  Store.subscribe(
+    () =>
+    {
+      var map = <L.Map> this._map;
+
+      var stopId: string;
+      var newStops = (Store.getState() as ReduxState).stopList;
+      if (newStops !== oldStops)
+      {
+        // first remove those that missing on the new list
+        // and there is a corresponding marker (it should be)
+        for ( stopId of Object.keys(oldStops) )
+        {
+          if ( !newStops[stopId] && stopMarkers[stopId] )
+          {
+            map.removeLayer( stopMarkers[stopId] );
+            delete stopMarkers[stopId];
+          }
+        }
+        // then add new stops
+        for ( stopId of Object.keys(newStops) )
+        {
+          if ( !oldStops[stopId] && !stopMarkers[stopId] )
+          {
+            stopMarkers[stopId] =
+              L.marker(
+                [newStops[stopId].lat, newStops[stopId].lng],
+                {icon: icons.stop }
+              );
+
+            map.addLayer( stopMarkers[stopId] );
+          }
+        }
+        // finaly replace
+        oldStops = newStops;
+      }
+    }
+  );
 }
 
 _Map.prototype.create =
