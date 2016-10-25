@@ -1,8 +1,11 @@
 /// <reference path="../typings/index.d.ts" />
 'use strict';
 
+import * as request from 'superagent';
+
 import {ActionCreators} from './action-creators';
 import {Store} from './store';
+import { config } from '../config';
 
 require("./map.less");
 
@@ -183,6 +186,24 @@ function _Map()
                 [newStops[stopId].lat, newStops[stopId].lng],
                 {icon: icons.stop }
               );
+
+            stopMarkers[stopId].bindPopup( createStopPopup(newStops[stopId]) );
+
+            stopMarkers[stopId].on(
+              'popupopen',
+              event =>
+              {
+                console.log(event);
+                getStopSchedule(newStops[stopId].id);
+              }
+            );
+            stopMarkers[stopId].on(
+              'popupclose',
+              event =>
+              {
+                console.log(event);
+              }
+            );
 
             map.addLayer( stopMarkers[stopId] );
           }
@@ -449,6 +470,45 @@ function createPopupCode(data: busData): string
     `;
 
   return text;
+}
+
+function createStopPopup(stop: Stop): string
+{
+  var text =
+  `<div id="stop-${stop.id}">
+    <p class="popup-stop-header">${stop.n}</p>
+    <table class="popup-stop-table">
+      <thead><th><td>Маршрут</td><td>Ближайший</td><td>Направление</td></th></thead>
+      <tbody>
+      </tbody>
+    </table>
+    <p class="popup-footer">Обновляю...</p>
+  </div>
+  `
+  ;
+
+  return text;
+}
+
+function getStopSchedule(id: string)
+{
+  request
+  .get(`${config.URL}${config.GET_STOP_SCHEDULE}?stopId=${id}`)
+  .end(
+    (err: Error, res: request.Response) =>
+    {
+      var forecasts: Forecast [];
+      try
+      {
+        forecasts = JSON.parse(res.text).routes;
+      }
+      catch (err)
+      {
+        forecasts = [];
+      }
+      console.log(forecasts);
+    }
+  );
 }
 
 function entity(e: any): any
