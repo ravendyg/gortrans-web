@@ -5,6 +5,15 @@ import {combineReducers, createStore} from 'redux';
 import {config} from '../config';
 import {Actions} from './action-creators';
 
+const app =
+combineReducers({
+  busList, connection, dataStorage, stopList
+});
+
+export const Store = createStore(app);
+
+
+
 const allColors =
 [
   '#B71C1C', '#039BE5', '#311B92', '#004D40', '#827717'
@@ -16,8 +25,39 @@ for ( let color of allColors )
   availableColors.push( color );
 }
 
-const busList =
-(state: VehicleMeta [] = [], action: ActionType) =>
+function stopList(state: {[stopId: string]: Stop} = {}, action: ActionType)
+{
+  switch ( action.type )
+  {
+    case Actions.ADD_BUS_TO_LIST:
+    case Actions.REMOVE_BUS_FROM_LIST:
+      debugger;
+      // use the same logic of reconstructing list from scratches
+      var out = {};
+      var buses = (Store.getState() as ReduxState).busList;
+      var busStops = (Store.getState() as ReduxState).dataStorage.busStops;
+      var stops = (Store.getState() as ReduxState).dataStorage.stops;
+      var currentBusStops, bus, stopId;
+      for ( bus of buses )
+      {
+        currentBusStops = busStops[bus.code];
+        for (stopId of Object.keys(currentBusStops) )
+        {
+          if ( !out[stopId] )
+          {
+            out[stopId] = stops[stopId];
+          }
+        }
+      }
+      console.log(out);
+    return out;
+
+    default:
+    return state;
+  }
+}
+
+function busList(state: VehicleMeta [] = [], action: ActionType)
 {
   var newState = [];
   var color;
@@ -58,8 +98,7 @@ const busList =
   }
 };
 
-const connection =
-(state: boolean = false, action: ActionType) =>
+function connection(state: boolean = false, action: ActionType)
 {
   switch( action.type )
   {
@@ -72,7 +111,7 @@ const connection =
   }
 };
 
-const dataStorage =
+function dataStorage
 ( state: dataStorageStore =
  {
    routes: {},
@@ -89,7 +128,7 @@ const dataStorage =
    busStops: {}
   },
   action: ActionType
-) =>
+)
 {
   var out: dataStorageStore = <dataStorageStore>{};
   Object['assign'](out, state);
@@ -157,11 +196,4 @@ function mapVehiclesIntoCodes(
 }
 
 
-
-const app =
-combineReducers({
-  busList, connection, dataStorage
-});
-
-export const Store = createStore(app);
 

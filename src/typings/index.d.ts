@@ -41,6 +41,7 @@ declare type ReduxState =
 {
   dataStorage: dataStorageStore,
   busList: VehicleMeta [],
+  stopList: {[stopId: string]: Stop}
 };
 
 declare type dataStorageStore =
@@ -163,11 +164,14 @@ declare type Point =
 
 declare type Stop =
 {
-  id: string,
-  n: string,
-  lat: number,
-  lng: number,
-  vehicles: {[busCode: string]: boolean}
+  [id: string]:
+  {
+    id: string,
+    n: string,
+    lat: number,
+    lng: number,
+    vehicles: {[busCode: string]: boolean}
+  }
 };
 
 declare type BusStops =
