@@ -38,7 +38,6 @@ function connect()
     'bus update',
     (changes: StateChanges) =>
     {
-      console.log(changes);
       Map.updateVehicle(changes);
     }
   );

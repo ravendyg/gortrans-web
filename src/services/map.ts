@@ -588,6 +588,24 @@ function getStopSchedule(id: string, targetPopup: HTMLDivElement, targetStatus: 
               if (popup)
               {
                 popup.style.left = `-${Math.round(popup.offsetWidth/2)}px`;
+                var timeLeft = 59;
+                var countDown = setInterval(
+                  () =>
+                  {
+                    if (targetTimer)
+                    {
+                      targetTimer.textContent = (--timeLeft) + ' сек';
+                    }
+                    if (timeLeft === 0)
+                    {
+                      clearInterval(countDown);
+                      targetStatus.textContent = 'Обновляю...';
+                      targetTimer.textContent = '';
+                      getStopSchedule(id, targetPopup, targetStatus, targetTimer);
+                    }
+                  },
+                  1000
+                );
               }
             }
           );
@@ -609,7 +627,6 @@ function getStopSchedule(id: string, targetPopup: HTMLDivElement, targetStatus: 
           targetStatus.textContent = 'Ошибка обновления';
         }
       }
-      console.log(forecasts);
     }
   );
 }
