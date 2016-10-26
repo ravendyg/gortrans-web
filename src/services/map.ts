@@ -273,14 +273,10 @@ function _initMap(lat: number, lng: number, zoom: number)
     .setView({lat, lng}, zoom);
 
   var map: L.Map = this._map;
+
   // coords and zoom tracker
-  // map.on(
-  //   'moveend',
-  //   () =>
-  //   {
-  //     map.getLa
-  //   }
-  // );
+  map.on( 'moveend', rememberMapLocation.bind(this, map) );
+  map.on( 'zomeend', rememberMapLocation.bind(this, map) );
 
   L.tileLayer['provider']('OpenStreetMap.HOT').addTo(map);
   document.querySelector('.leaflet-control-zoom').remove();
@@ -409,6 +405,14 @@ function zoomToBusRote(busCode: string)
 const Map: iMap = new _Map();
 
 export { Map };
+
+
+function rememberMapLocation(map: L.Map)
+{
+  var center = map.getCenter();
+  var toStore = {lat: center.lat, lng: center.lng, zoom: map.getZoom()};
+  localStorage.setItem('map-params', JSON.stringify(toStore));
+}
 
 
 function createMarker(data: busData, code: string, graph: string)
