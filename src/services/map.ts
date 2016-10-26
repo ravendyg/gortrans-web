@@ -176,6 +176,7 @@ function _Map()
             delete stopMarkers[stopId];
           }
         }
+        // debugger;
         // then add new stops
         for ( stopId of Object.keys(newStops) )
         {
@@ -191,18 +192,11 @@ function _Map()
 
             stopMarkers[stopId].on(
               'popupopen',
-              event =>
-              {
-                console.log(event);
-                getStopSchedule(newStops[stopId].id);
-              }
+              onPopupopen.bind(this, stopId)
             );
             stopMarkers[stopId].on(
               'popupclose',
-              event =>
-              {
-                console.log(event);
-              }
+              onPopupclose.bind(this)
             );
 
             map.addLayer( stopMarkers[stopId] );
@@ -213,6 +207,17 @@ function _Map()
       }
     }
   );
+}
+
+function onPopupopen(stopId, event)
+{
+  console.log(event);
+  getStopSchedule(stopId);
+}
+
+function onPopupclose(event)
+{
+
 }
 
 _Map.prototype.create =
