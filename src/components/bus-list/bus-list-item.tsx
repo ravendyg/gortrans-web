@@ -5,7 +5,7 @@ import * as React from 'react';
 
 import {Store} from './../../services/store';
 
-import { RemoveBtn } from '../remove-btn';
+import { RemoveBtn } from '../btns/remove-btn';
 
 
 var busImg = require('../../images/bus.png');

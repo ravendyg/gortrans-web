@@ -10,7 +10,7 @@ import { browserHistory } from 'react-router';
 import {Store} from './../../services/store';
 
 import {BusGroup} from './bus-group';
-import { BackBtn } from './../back-btn';
+import { BackBtn } from './../btns/back-btn';
 
 require('./bus-selector.less');
 
