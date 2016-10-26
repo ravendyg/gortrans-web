@@ -209,16 +209,6 @@ function _Map()
   );
 }
 
-function onPopupopen(stopId, event)
-{
-  console.log(event);
-  getStopSchedule(stopId);
-}
-
-function onPopupclose(event)
-{
-
-}
 
 _Map.prototype.create =
 function create()
@@ -458,15 +448,25 @@ function createPopupCode(data: busData): string
     default:
       type = 'Автобус';
   }
-  var stops = data.rasp.split('|').filter(entity);
-  var table = '<table><tbody>';
+  var stops;
+  var table
 
-  for ( var stop of stops )
+  if (data.rasp.match(/\|/))
   {
-    [stopTime, stopName] = stop.split('+');
-    table += `<tr><td>${stopTime}</td><td class="popup-table-stop-name">${stopName}</td></tr>`;
+    stops = data.rasp.split('|').filter(entity);
+    table = '<table><tbody>';
+
+    for ( var stop of stops )
+    {
+      [stopTime, stopName] = stop.split('+');
+      table += `<tr><td>${stopTime}</td><td class="popup-table-stop-name">${stopName}</td></tr>`;
+    }
+    table += '</tbody></table>';
   }
-  table += '</tbody></table>';
+  else
+  {
+    table = '';
+  }
 
   var text =
     `<p class="popup-header">${type} №${data.title} (график ${data.graph})</p>
@@ -477,25 +477,96 @@ function createPopupCode(data: busData): string
   return text;
 }
 
+function onPopupopen(stopId, event)
+{
+  var targetPopup = <HTMLDivElement> document.getElementById('stop-' + stopId);
+  var targetStatus = <HTMLSpanElement> document.getElementById('stop-' + stopId + '-status');
+  var targetTimer = <HTMLSpanElement> document.getElementById('stop-' + stopId + '-timer');
+  getStopSchedule(stopId, targetPopup, targetStatus, targetTimer);
+}
+
+function onPopupclose(event)
+{
+
+}
+
 function createStopPopup(stop: Stop): string
 {
   var text =
-  `<div id="stop-${stop.id}">
-    <p class="popup-stop-header">${stop.n}</p>
-    <table class="popup-stop-table">
-      <thead><th><td>Маршрут</td><td>Ближайший</td><td>Направление</td></th></thead>
-      <tbody>
-      </tbody>
-    </table>
-    <p class="popup-footer">Обновляю...</p>
-  </div>
+  `<p class="popup-stop-header">${stop.n}</p>
+    <div id="stop-${stop.id}">
+    </div>
+  <p class="popup-footer">
+    <span id="stop-${stop.id}-status">Обновляю...</span>
+    <span id="stop-${stop.id}-timer"></span>
+  </p>
   `
   ;
 
   return text;
 }
 
-function getStopSchedule(id: string)
+function createStopPopupTable(forecasts: Forecast []): string
+{
+  var tbody =
+    forecasts
+    .sort(sortForecastsByNearestArrival)
+    .map(createStopPopupTableLine)
+    .join('\n')
+    ;
+  var text =
+  `<table class="popup-stop-table">
+    <thead><th>Маршрут</th><th>Ближайший</th><th>Направление</th></thead>
+    <tbody>
+    ${tbody}
+    </tbody>
+  </table>`;
+
+  return text;
+}
+
+function sortForecastsByNearestArrival(e1: Forecast, e2: Forecast): number
+{
+  return e1.markers[0].time > e2.markers[0].time
+    ? 1
+    : e1.markers[0].time < e2.markers[0].time
+      ? -1
+      : 0;
+}
+
+function createStopPopupTableLine(forecast: Forecast): string
+{
+  var name = forecast.title + ' ';
+  switch (forecast.typetr)
+  {
+    case '1':
+      name += '(а.)';
+    break;
+
+    case '2':
+      name += '(тр.)';
+    break;
+
+    case '3':
+      name += '(тм.)';
+    break;
+
+    case '8':
+      name += '(м.т.)';
+    break;
+  }
+
+  var text =
+  `<tr>
+    <td>${name}</td>
+    <td>${forecast.markers[0].time ? forecast.markers[0].time : '< 1'} мин</td>
+    <td>${forecast.stop_end}</td>
+  </tr>`;
+
+  return text;
+}
+
+function getStopSchedule(id: string, targetPopup: HTMLDivElement, targetStatus: HTMLSpanElement, targetTimer: HTMLSpanElement)
 {
   request
   .get(`${config.URL}${config.GET_STOP_SCHEDULE}?stopId=${id}`)
@@ -506,10 +577,37 @@ function getStopSchedule(id: string)
       try
       {
         forecasts = JSON.parse(res.text).routes;
+        if (targetPopup)
+        {
+          targetPopup.innerHTML = createStopPopupTable(forecasts);
+          targetPopup.parentElement.style.width = '';
+          setTimeout(
+            () =>
+            {
+              var popup = <HTMLDivElement> document.querySelector('.leaflet-popup');
+              if (popup)
+              {
+                popup.style.left = `-${Math.round(popup.offsetWidth/2)}px`;
+              }
+            }
+          );
+        }
+        if (targetStatus)
+        {
+          targetStatus.textContent = 'До обновления: ';
+        }
+        if (targetTimer)
+        {
+          targetTimer.textContent = '60 сек';
+        }
       }
       catch (err)
       {
         forecasts = [];
+        if (targetStatus)
+        {
+          targetStatus.textContent = 'Ошибка обновления';
+        }
       }
       console.log(forecasts);
     }

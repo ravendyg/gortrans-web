@@ -183,5 +183,10 @@ declare type Forecast =
 {
   title: string,
   typetr: string,
-  stop_end: string
+  stop_end: string,
+  markers:
+  {
+    id: string,
+    time: number
+  } []
 };
