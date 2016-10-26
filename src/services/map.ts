@@ -166,7 +166,15 @@ function create()
   {
     navigator.geolocation.getCurrentPosition(
       (position: Position) =>
-      {
+      { // watch position change
+        this._position = position.coords;
+        navigator.geolocation.watchPosition(
+          (position: Position) =>
+          {
+            this._position = position.coords;
+          }
+        );
+        // notify listeners
         this.coordsAvailable = true;
         for ( var cb of this._coordsAvailableSubscribers)
         {
@@ -252,10 +260,25 @@ function create()
   );
 }
 
+_Map.prototype.zoomToUser =
+function zoomToUser()
+{
+  var map = <L.Map>this._map;
+  var position = <Coordinates> this._position;
+  map.setView({lat: position.latitude, lng: position.longitude}, map.getZoom());
+}
+
 _Map.prototype.subscribeForCoordsAvailable =
 function subscribeForCoordsAvailable(cb: (available: boolean) => void)
 {
-
+  if ( this.coordsAvailable === true || this.coordsAvailable === false)
+  { // if ready call immediately
+    cb(this.coordsAvailable);
+  }
+  else
+  {
+    this._coordsAvailableSubscribers.push(cb);
+  }
 }
 
 function _initMap(lat: number, lng: number, zoom: number)

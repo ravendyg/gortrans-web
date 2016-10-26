@@ -5,7 +5,7 @@
 
 import * as React from 'react';
 
-require('./back-btn.less');
+require('./btns.less');
 
 interface BackBtnState
 {}

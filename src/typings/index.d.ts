@@ -148,6 +148,8 @@ interface iMap
   updateVehicle(changes: StateChanges): void;
   removeVehicle(busCode: string): void;
   zoomToBusRote(busCode: string): void;
+  subscribeForCoordsAvailable(cb: (available: boolean) => void): void;
+  zoomToUser(): void;
 }
 
 declare type Point =

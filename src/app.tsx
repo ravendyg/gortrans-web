@@ -11,6 +11,7 @@ import { config } from './config';
 import { BusSelector } from './components/bus-selector/bus-selector';
 import { BusList } from './components/bus-list/bus-list';
 import { SearchBtn } from './components/btns/search-btn';
+import { LocationBtn } from './components/btns/location-btn';
 
 import {Map} from './services/map';
 import {Socket} from './services/data-provider';
@@ -115,15 +116,46 @@ var appWrapperStyle =
   width: 0
 };
 
-class App extends React.Component <AppState, AppProps>
+interface AppState
 {
-  constructor () { super(); }
+  locationAvailable: boolean
+}
+interface AppProps
+{}
 
-  render () {
+class App extends React.Component <AppProps, AppState>
+{
+  constructor()
+  {
+    super();
+
+    this.state =
+    {
+      locationAvailable: false
+    };
+
+    Map.subscribeForCoordsAvailable(
+      (available: boolean) =>
+      {
+        if (available)
+        {
+          this.setState({
+            locationAvailable: true
+          });
+        }
+      }
+    );
+  }
+
+  render()
+  {
+    var location = this.state.locationAvailable ? <LocationBtn move={Map.zoomToUser.bind(Map)}/> : '';
+
     return (
     <div style={appWrapperStyle}>
       <BusList/>
       <SearchBtn/>
+      {location}
       {this.props.children}
     </div>
     )

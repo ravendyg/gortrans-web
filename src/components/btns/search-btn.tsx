@@ -6,7 +6,7 @@
 import * as React from 'react';
 import { Link, browserHistory } from 'react-router';
 
-require('./search-btn.less');
+require('./btns.less');
 
 interface SearchBtnState
 {}

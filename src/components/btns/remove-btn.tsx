@@ -3,7 +3,7 @@
 
 import * as React from 'react';
 
-require('./remove-btn.less');
+require('./btns.less');
 
 interface RemoveBtnState
 {}
