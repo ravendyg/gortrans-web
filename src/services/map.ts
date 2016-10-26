@@ -154,6 +154,51 @@ var icons =
 function _Map()
 {
   this._state = {};
+}
+
+
+_Map.prototype.create =
+function create()
+{
+  var mapParams = JSON.parse( localStorage.getItem('map-params') || '{"lat": 54.908593335436926, "lng": 83.0291748046875, "zoom": 12}' );
+  this._coordsAvailableSubscribers = [];
+  if ( navigator.geolocation )
+  {
+    navigator.geolocation.getCurrentPosition(
+      (position: Position) =>
+      {
+        this.coordsAvailable = true;
+        for ( var cb of this._coordsAvailableSubscribers)
+        {
+          cb(this.coordsAvailable);
+        }
+      },
+      (err: PositionError) =>
+      {
+        this.coordsAvailable = false;
+        for ( var cb of this._coordsAvailableSubscribers)
+        {
+          cb(this.coordsAvailable);
+        }
+      },
+      {
+        enableHighAccuracy: false,
+        timeout: 3000
+      }
+    );
+  }
+  else
+  {
+    this.coordsAvailable = false;
+    for ( var cb of this._coordsAvailableSubscribers)
+    {
+      cb(this.coordsAvailable);
+    }
+  }
+
+  _initMap.call(this, mapParams.lat, mapParams.lng, mapParams.zoom);
+
+
   var oldStops: {[stopId: string]: Stop} = {};
   var stopMarkers: {[stopId: string]: L.Marker } = {};
 
@@ -161,7 +206,6 @@ function _Map()
     () =>
     {
       var map = <L.Map> this._map;
-
       var stopId: string;
       var newStops = (Store.getState() as ReduxState).stopList;
       if (newStops !== oldStops)
@@ -176,7 +220,6 @@ function _Map()
             delete stopMarkers[stopId];
           }
         }
-        // debugger;
         // then add new stops
         for ( stopId of Object.keys(newStops) )
         {
@@ -209,38 +252,13 @@ function _Map()
   );
 }
 
-
-_Map.prototype.create =
-function create()
+_Map.prototype.subscribeForCoordsAvailable =
+function subscribeForCoordsAvailable(cb: (available: boolean) => void)
 {
-  if ( navigator.geolocation )
-  {
-    navigator.geolocation.getCurrentPosition(
-      (position: Position) =>
-      {
-        _initMap.call(this,
-          position.coords.latitude,
-          position.coords.longitude
-        );
-      },
-      (err: PositionError) =>
-      {
-        console.error(err, 'getCurrentPosition');
-        _initMap.call(this, 54.908593335436926, 83.0291748046875);
-      },
-      {
-        enableHighAccuracy: false,
-        timeout: 3000
-      }
-    );
-  }
-  else
-  { // fallback
-    _initMap.call(this, 54.908593335436926, 83.0291748046875);
-  }
+
 }
 
-function _initMap(lat: number, lng: number)
+function _initMap(lat: number, lng: number, zoom: number)
 {
   var southWest = L.latLng(30, 10),
     northEast = L.latLng(80, 200),
@@ -252,9 +270,19 @@ function _initMap(lat: number, lng: number)
         minZoom: 4,
         maxBounds: bounds
       })
-    .setView({lat, lng}, 12);
+    .setView({lat, lng}, zoom);
 
-  L.tileLayer['provider']('OpenStreetMap.HOT').addTo(this._map);
+  var map: L.Map = this._map;
+  // coords and zoom tracker
+  // map.on(
+  //   'moveend',
+  //   () =>
+  //   {
+  //     map.getLa
+  //   }
+  // );
+
+  L.tileLayer['provider']('OpenStreetMap.HOT').addTo(map);
   document.querySelector('.leaflet-control-zoom').remove();
 }
 
