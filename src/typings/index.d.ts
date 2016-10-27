@@ -150,6 +150,8 @@ interface iMap
   zoomToBusRote(busCode: string): void;
   subscribeForCoordsAvailable(cb: (available: boolean) => void): void;
   zoomToUser(): void;
+  zoomIn(): void;
+  zoomOut(): void;
 }
 
 declare type Point =

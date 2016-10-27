@@ -12,6 +12,7 @@ import { BusSelector } from './components/bus-selector/bus-selector';
 import { BusList } from './components/bus-list/bus-list';
 import { SearchBtn } from './components/btns/search-btn';
 import { LocationBtn } from './components/btns/location-btn';
+import { ZoomBtn } from './components/btns/zoom-btn';
 
 import {Map} from './services/map';
 import {Socket} from './services/data-provider';
@@ -23,6 +24,7 @@ import * as request from 'superagent';
 import * as localForage from 'localforage';
 
 require('./app.less');
+require('./components/btns/btns.less');
 
 Socket.connect();
 Map.create();
@@ -112,7 +114,7 @@ function makeRequestForBasicData(
 var appWrapperStyle =
 {
   position: 'relative',
-  height: 0,
+  height: '100vh',
   width: 0
 };
 
@@ -149,13 +151,19 @@ class App extends React.Component <AppProps, AppState>
 
   render()
   {
-    var location = this.state.locationAvailable ? <LocationBtn move={Map.zoomToUser.bind(Map)}/> : '';
+    var location =
+      this.state.locationAvailable
+        ? <LocationBtn move={Map.zoomToUser.bind(Map)}/>
+        : ''
+        ;
 
     return (
     <div style={appWrapperStyle}>
       <BusList/>
       <SearchBtn/>
       {location}
+      <ZoomBtn icon="plus"  zoom={Map.zoomIn.bind(Map)}/>
+      <ZoomBtn icon="minus" zoom={Map.zoomOut.bind(Map)}/>
       {this.props.children}
     </div>
     )

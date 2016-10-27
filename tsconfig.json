@@ -4,7 +4,8 @@
     "jsx": "react",
     "target": "ES5",
     "sourceMap": true,
-		"types": ["node"]
+		"types": ["node"],
+		"experimentalDecorators": true
 	},
 	"files":
 	[

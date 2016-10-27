@@ -14,25 +14,25 @@ if ( !navigator.userAgent.toLowerCase().match(/(android|iphone|ipad)/) )
   };
 }
 
-
-interface LocationBtnState
+interface ZoomBtnState
 {}
-interface LocationBtnProps
+interface ZoomBtnProps
 {
-  move: any
+  zoom: any,
+  icon: string
 }
 
 @Radium
-export class LocationBtn extends React.Component <LocationBtnProps, LocationBtnState>
+export class ZoomBtn extends React.Component <ZoomBtnProps, ZoomBtnState>
 {
   constructor () { super(); }
 
   render()
   {
     return(
-      <div className="location-btn" onClick={this.props.move}>
-        <div style={styles}>
-          <i className="fa fa-location-arrow" aria-hidden="true"></i>
+      <div className="zoom-btn" onClick={this.props.zoom}>
+        <div className={this.props.icon} style={styles}>
+          <i className={'fa fa-' + this.props.icon} aria-hidden="true"></i>
         </div>
       </div>
     );

@@ -13,16 +13,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-
-  &:hover
-  {
-    color: red;
-    text-shadow: 2px 2px 1px black;
-  }
 }
 
 .round-float-btn
 {
+  cursor: pointer;
   div
   {
     position: absolute;
@@ -33,14 +28,19 @@
     height: 64px;
     color: white;
     background-color: #03A9F4;
-    &:hover
-    {
-      background-color: #01579B
-    }
+
     &:active
     {
       color: #EF5350;
       background-color: #512DA8;
+    }
+
+    i
+    {
+      color: inherit !important;
+      position: absolute;
+      top: 16px;
+      left: 19px;
     }
   }
 }
@@ -52,13 +52,6 @@
   {
     top: 1rem;
     left: 1rem;
-    i
-    {
-      color: inherit !important;
-      position: absolute;
-      top: 16px;
-      left: 19px;
-    }
   }
 }
 
@@ -67,14 +60,22 @@
   .round-float-btn;
   div
   {
-    top: 7rem;
+    bottom: 1.5rem;
+    left: 10rem;
+  }
+}
+
+.zoom-btn
+{
+  .round-float-btn;
+  .plus
+  {
+    bottom: 1.5rem;
     left: 1rem;
-    i
-    {
-      color: inherit !important;
-      position: absolute;
-      top: 16px;
-      left: 19px;
-    }
+  }
+  .minus
+  {
+    bottom: 1.5rem;
+    left: 5.5rem;
   }
 }

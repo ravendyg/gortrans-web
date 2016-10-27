@@ -167,10 +167,17 @@ function create()
     navigator.geolocation.getCurrentPosition(
       (position: Position) =>
       { // watch position change
+        this._userMarker = L.marker([position.coords.latitude, position.coords.longitude]);
+        this._userMarker.bindPopup('Вы здесь');
+        this._map.addLayer( this._userMarker );
+
         this._position = position.coords;
         navigator.geolocation.watchPosition(
           (position: Position) =>
           {
+            var marker = <L.Marker> this._userMarker;
+            marker.setLatLng([position.coords.latitude, position.coords.longitude]);
+
             this._position = position.coords;
           }
         );
@@ -423,6 +430,20 @@ function zoomToBusRote(busCode: string)
     var bounds = buses[busCode].line.getBounds();
     (this._map as L.Map).fitBounds(bounds, {});
   }
+}
+
+_Map.prototype.zoomIn =
+function zoomIn()
+{
+  var map = <L.Map> this._map;
+  map.zoomIn();
+}
+
+_Map.prototype.zoomOut =
+function zoomOut()
+{
+  var map = <L.Map> this._map;
+  map.zoomOut();
 }
 
 const Map: iMap = new _Map();

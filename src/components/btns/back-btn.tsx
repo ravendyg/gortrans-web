@@ -1,11 +1,9 @@
 /// <reference path="../../typings/index.d.ts" />
-
 /* global vendor */;
 'use strict';
 
 import * as React from 'react';
 
-require('./btns.less');
 
 interface BackBtnState
 {}
