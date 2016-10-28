@@ -13,6 +13,7 @@ import { BusList } from './components/bus-list/bus-list';
 import { SearchBtn } from './components/btns/search-btn';
 import { LocationBtn } from './components/btns/location-btn';
 import { ZoomBtn } from './components/btns/zoom-btn';
+import { ShareGroup } from './components/share-group/share-group';
 
 import {Map} from './services/map';
 import {Socket} from './services/data-provider';
@@ -113,9 +114,9 @@ function makeRequestForBasicData(
 
 var appWrapperStyle =
 {
-  position: 'relative',
-  height: 0,
-  width: 0
+  position: 'absolute',
+  height: '100vh',
+  width: '100vw'
 };
 
 interface AppState
@@ -164,6 +165,7 @@ class App extends React.Component <AppProps, AppState>
       {location}
       <ZoomBtn icon="plus"  zoom={Map.zoomIn.bind(Map)}/>
       <ZoomBtn icon="minus" zoom={Map.zoomOut.bind(Map)}/>
+      <ShareGroup/>
       {this.props.children}
     </div>
     )
