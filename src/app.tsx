@@ -114,7 +114,7 @@ function makeRequestForBasicData(
 var appWrapperStyle =
 {
   position: 'relative',
-  height: '100vh',
+  height: 0,
   width: 0
 };
 
