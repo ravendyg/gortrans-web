@@ -2,6 +2,7 @@
 {
   position: absolute;
   right: 0;
+  bottom: 20px;
   z-index: 50;
 
   ul
@@ -14,7 +15,7 @@
       li
       {
         display: block;
-        font-size: 2rem;
+        font-size: 1rem;
         padding: 10px;
         i
         {
@@ -26,13 +27,34 @@
       {
         background-color: #5E89B3;
       }
+      #vk-share.not-mobile
+      {
+        &:hover
+        {
+          background-color: #5074A4;
+        }
+      }
       #fb-share
       {
         background-color: #3b5998;
       }
+      #fb-share.not-mobile
+      {
+        &:hover
+        {
+          background-color: #2d4373;
+        }
+      }
       #tw-share
       {
         background-color: #00a9f1;
+      }
+      #tw-share.not-mobile
+      {
+        &:hover
+        {
+          background-color: #0085be;
+        }
       }
     }
   }

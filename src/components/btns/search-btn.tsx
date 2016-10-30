@@ -5,16 +5,12 @@
 
 import * as React from 'react';
 import { Link, browserHistory } from 'react-router';
-import * as Radium from 'radium';
 
 
-var styles: any = {};
+var notMobile: string = '';
 if ( !navigator.userAgent.toLowerCase().match(/(android|iphone|ipad)/) )
 {
-  styles[':hover'] =
-  {
-    backgroundColor: '#01579B'
-  };
+  notMobile = 'not-mobile';
 }
 
 
@@ -23,7 +19,6 @@ interface SearchBtnState
 interface SearchBtnProps
 {}
 
-@Radium
 export class SearchBtn extends React.Component <SearchBtnProps, SearchBtnState>
 {
   constructor () { super(); }
@@ -32,7 +27,7 @@ export class SearchBtn extends React.Component <SearchBtnProps, SearchBtnState>
   {
     return(
       <Link to={'/select-bus'} className='search-btn'>
-        <div style={styles}>
+        <div className={notMobile}>
           <i className="fa fa-search" aria-hidden="true"></i>
         </div>
       </Link>

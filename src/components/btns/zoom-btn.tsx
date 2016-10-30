@@ -5,13 +5,10 @@ import * as React from 'react';
 import * as Radium from 'radium';
 
 
-var styles: any = {};
+var notMobile: string = '';
 if ( !navigator.userAgent.toLowerCase().match(/(android|iphone|ipad)/) )
 {
-  styles[':hover'] =
-  {
-    backgroundColor: '#01579B'
-  };
+  notMobile = 'not-mobile';
 }
 
 interface ZoomBtnState
@@ -22,7 +19,6 @@ interface ZoomBtnProps
   icon: string
 }
 
-@Radium
 export class ZoomBtn extends React.Component <ZoomBtnProps, ZoomBtnState>
 {
   constructor () { super(); }
@@ -31,7 +27,7 @@ export class ZoomBtn extends React.Component <ZoomBtnProps, ZoomBtnState>
   {
     return(
       <div className="zoom-btn" onClick={this.props.zoom}>
-        <div className={this.props.icon} style={styles}>
+        <div className={this.props.icon + ' ' + notMobile}>
           <i className={'fa fa-' + this.props.icon} aria-hidden="true"></i>
         </div>
       </div>

@@ -3,27 +3,13 @@
 'use strict';
 
 import * as React from 'react';
-import * as Radium from 'radium';
 
 require('./share-group.less');
 
-var stylesVk: any = {};
-var stylesTw: any = {};
-var stylesFb: any = {};
+var notMobile: string = '';
 if ( !navigator.userAgent.toLowerCase().match(/(android|iphone|ipad)/) )
 {
-  stylesVk[':hover'] =
-  {
-    backgroundColor: '#5074A4'
-  };
-  stylesTw[':hover'] =
-  {
-    backgroundColor: '#0085be'
-  };
-  stylesFb[':hover'] =
-  {
-    backgroundColor: '#2d4373'
-  };
+  notMobile = 'not-mobile';
 }
 
 interface ShareGroupState
@@ -31,7 +17,6 @@ interface ShareGroupState
 interface ShareGroupProps
 {}
 
-@Radium
 export class ShareGroup extends React.Component <ShareGroupProps, ShareGroupState>
 {
 
@@ -49,17 +34,17 @@ export class ShareGroup extends React.Component <ShareGroupProps, ShareGroupStat
       <div id="share-group">
         <ul>
           <a href="http://vk.com/share.php?url=https://maps.nskgortrans.info/" target="_blank">
-            <li id="vk-share" style={stylesVk} key="vk">
+            <li id="vk-share" className={notMobile} key="vk">
               <i className="fa fa-vk" aria-hidden="true"></i>
             </li>
           </a>
           <a href={fbLink} target="_blank">
-            <li id="fb-share" style={stylesFb} key="fb">
+            <li id="fb-share" className={notMobile} key="fb">
               <i className="fa fa-facebook" aria-hidden="true"></i>
             </li>
           </a>
           <a href={twLink} target="_blank">
-            <li id="tw-share" style={stylesTw} key="tw">
+            <li id="tw-share" className={notMobile} key="tw">
               <i className="fa fa-twitter" aria-hidden="true"></i>
             </li>
           </a>

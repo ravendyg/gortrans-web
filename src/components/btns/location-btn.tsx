@@ -2,16 +2,11 @@
 'use strict';
 
 import * as React from 'react';
-import * as Radium from 'radium';
 
-
-var styles: any = {};
+var notMobile: string = '';
 if ( !navigator.userAgent.toLowerCase().match(/(android|iphone|ipad)/) )
 {
-  styles[':hover'] =
-  {
-    backgroundColor: '#01579B'
-  };
+  notMobile = 'not-mobile';
 }
 
 
@@ -22,7 +17,6 @@ interface LocationBtnProps
   move: any
 }
 
-@Radium
 export class LocationBtn extends React.Component <LocationBtnProps, LocationBtnState>
 {
   constructor () { super(); }
@@ -31,7 +25,7 @@ export class LocationBtn extends React.Component <LocationBtnProps, LocationBtnS
   {
     return(
       <div className="location-btn" onClick={this.props.move}>
-        <div style={styles}>
+        <div className={notMobile}>
           <i className="fa fa-location-arrow" aria-hidden="true"></i>
         </div>
       </div>
