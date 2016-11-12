@@ -145,7 +145,7 @@ var icons =
 
   'stop': L.icon({
     iconUrl: require('./../images/bus-stop.png'),
-    iconSize: L.point(30,30),
+    iconSize: L.point(25,25),
     iconAnchor: [15, 15]
   })
 };
