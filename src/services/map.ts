@@ -421,6 +421,18 @@ function removeVehicle(busCode: string)
   }
 }
 
+_Map.prototype.cleanBusMarkers =
+function cleanBusMarkers()
+{
+  for (var busCode of Object.keys(this._state) )
+  {
+    for (var graph of Object.keys(this._state[busCode].vh) )
+    {
+      this._map.removeLayer( this._state[busCode].vh[graph].marker );
+    }
+  }
+}
+
 _Map.prototype.zoomToBusRote =
 function zoomToBusRote(busCode: string)
 {

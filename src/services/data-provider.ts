@@ -7,6 +7,8 @@ import {config} from '../config';
 
 import {Map} from './map';
 
+import {Store} from './store';
+
 var socket: SocketIOClient.Socket;
 
 function _Socket()
@@ -17,6 +19,27 @@ _Socket.prototype.connect =
 function connect()
 {
   socket = io(config.URL);
+
+  socket.on(
+    'connect',
+    () =>
+    {
+      var listOfSelectedVehicles = (Store.getState() as ReduxState).busList;
+
+      for ( var vehicle of listOfSelectedVehicles)
+      {
+        this.addBusListener(vehicle.code);
+      }
+    }
+  );
+
+  socket.on(
+    'disconnect',
+    () =>
+    {
+      Map.cleanBusMarkers();
+    }
+  );
 
   socket.on(
     'error',

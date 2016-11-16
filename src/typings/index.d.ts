@@ -145,6 +145,7 @@ interface iMap
 {
   create(): void;
   addVehicle(state: State): void;
+  cleanBusMarkers(): void;
   updateVehicle(changes: StateChanges): void;
   removeVehicle(busCode: string): void;
   zoomToBusRote(busCode: string): void;
