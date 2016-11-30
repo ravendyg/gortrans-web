@@ -100,19 +100,22 @@ export class BusSelector extends React.Component <BusSelectorProps, BusSelectorS
     }
   }
 
-  public closeMenu()
+  public closeMenu(event)
   {
-    this.setState({
-      className: 'menu',
-      items: this.state.items
-    });
-    setTimeout(
-      () =>
-      {
-        browserHistory.goBack();
-      },
-      500
-    );
+    if (!event || event.target.id === 'bus-selector-wrapper')
+    {
+      this.setState({
+        className: 'menu',
+        items: this.state.items
+      });
+      setTimeout(
+        () =>
+        {
+          browserHistory.goBack();
+        },
+        500
+      );
+    }
   }
 
   render()
@@ -122,7 +125,8 @@ export class BusSelector extends React.Component <BusSelectorProps, BusSelectorS
       : ''
       ;
     return(
-      <div className="bus-selector-wrapper">
+      <div id="bus-selector-wrapper" onClick={this.closeMenu.bind(this)}>
+
         <div className={this.state.className}>
           {backBtn}
           <input
@@ -143,7 +147,7 @@ export class BusSelector extends React.Component <BusSelectorProps, BusSelectorS
             )}
           </div>
         </div>
-        <div className="overlay" onClick={this.closeMenu.bind(this)}></div>
+
       </div>
     );
   }
