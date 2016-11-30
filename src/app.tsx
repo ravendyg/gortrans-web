@@ -64,7 +64,7 @@ function makeRequestForBasicData(
 )
 {
   request
-  .get(`${config.URL}${config.SYNC_ROUTE}?routestimestamp=${routes.timestamp}&trassestimestamp=${trasses.timestamp}`)
+  .get(`${location.href}${config.SYNC_ROUTE}?routestimestamp=${routes.timestamp}&trassestimestamp=${trasses.timestamp}`)
   .end(
     (err: Error, res: request.Response) =>
     {

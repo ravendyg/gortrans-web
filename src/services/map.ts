@@ -657,7 +657,7 @@ function createStopPopupTableLine(forecast: Forecast): string
 function getStopSchedule(id: string, targetPopup: HTMLDivElement, targetStatus: HTMLSpanElement, targetTimer: HTMLSpanElement)
 {
   request
-  .get(`${config.URL}${config.GET_STOP_SCHEDULE}?stopId=${id}`)
+  .get(`${location.href}${config.GET_STOP_SCHEDULE}?stopId=${id}`)
   .end(
     (err: Error, res: request.Response) =>
     {
