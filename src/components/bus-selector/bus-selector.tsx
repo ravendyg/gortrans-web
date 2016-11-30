@@ -29,6 +29,7 @@ interface BusSelectorProps
 export class BusSelector extends React.Component <BusSelectorProps, BusSelectorState>
 {
   private _index: number;
+  private _timer: number;
   private _typeKeys: string [];
 
   private _data: dataStorageStore;
@@ -73,10 +74,12 @@ export class BusSelector extends React.Component <BusSelectorProps, BusSelectorS
 
   private _searchChange(input: InputChangeEvent)
   {
-    setTimeout(
-      this._checkTimeToSearch.bind(this, ++this._index, input.target.value),
-      250
-    );
+    clearTimeout(this._timer);
+    this._timer =
+      setTimeout(
+        this._checkTimeToSearch.bind(this, ++this._index, input.target.value),
+        250
+      );
   }
 
   private _checkTimeToSearch(index: number, value: string)
