@@ -133,13 +133,15 @@ export class BusSelector extends React.Component <BusSelectorProps, BusSelectorS
             ref="search"
           />
 
-          {this.state.items.map( e =>
-            <BusGroup
-              key={e.name}
-              item={e}
-              closeCb={this.closeMenu.bind(this)}
-            />
-          )}
+          <div className="bus-groups-wrapper">
+            {this.state.items.map( e =>
+              <BusGroup
+                key={e.name}
+                item={e}
+                closeCb={this.closeMenu.bind(this)}
+              />
+            )}
+          </div>
         </div>
         <div className="overlay" onClick={this.closeMenu.bind(this)}></div>
       </div>
