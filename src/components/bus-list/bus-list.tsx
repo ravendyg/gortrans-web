@@ -23,6 +23,8 @@ export class BusList extends React.Component <BusListProps, BusListState>
 {
   private currentItems: VehicleMeta [];
 
+  private _unsubscribeFromBusList: any;
+
   constructor ()
   {
     super();
@@ -35,16 +37,22 @@ export class BusList extends React.Component <BusListProps, BusListState>
 
   public componentDidMount()
   {
-    Store.subscribe(
-      () =>
-      {
-        let items = (Store.getState() as ReduxState).busList;
-        if ( this.state.items !== items )
+    this._unsubscribeFromBusList =
+      Store.subscribe(
+        () =>
         {
-          this.setState({ items });
+          let items = (Store.getState() as ReduxState).busList;
+          if ( this.state.items !== items )
+          {
+            this.setState({ items });
+          }
         }
-      }
-    );
+      );
+  }
+
+  public componentWillUnmount()
+  {
+    this._unsubscribeFromBusList();
   }
 
   public zoomToRoot(busCode: string)

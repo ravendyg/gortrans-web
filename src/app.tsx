@@ -20,6 +20,7 @@ import {Socket} from './services/data-provider';
 
 import {ActionCreators} from './services/action-creators';
 import {Store} from './services/store';
+import * as UserActions from './services/user-actions';
 
 import * as request from 'superagent';
 import * as localForage from 'localforage';
@@ -106,6 +107,18 @@ function makeRequestForBasicData(
         {
           Store.dispatch( ActionCreators.loadListOfStops(res.body.stopsData) );
         }
+
+        // show buses from the previous visit
+        var buses: VehicleMeta [];
+        try
+        {
+          buses = JSON.parse( localStorage.getItem('bus-list') );
+          for (var _bus of buses)
+          {
+            UserActions.addBus(_bus);
+          }
+        }
+        catch (err) {}
       }
     }
   );
@@ -128,6 +141,8 @@ interface AppProps
 
 class App extends React.Component <AppProps, AppState>
 {
+  private _itemsLoaded: boolean;
+
   constructor()
   {
     super();
@@ -136,6 +151,8 @@ class App extends React.Component <AppProps, AppState>
     {
       locationAvailable: false
     };
+
+    this._itemsLoaded = false;
 
     Map.subscribeForCoordsAvailable(
       (available: boolean) =>
@@ -150,6 +167,29 @@ class App extends React.Component <AppProps, AppState>
     );
   }
 
+  public componentDidMount()
+  {
+    if ( Object.keys( (Store.getState() as ReduxState).dataStorage.routes ).length > 0 )
+    {
+      this._itemsLoaded = true;
+    }
+    else
+    {
+      var _unsubscribeFromBusList =
+      Store.subscribe(
+        () =>
+        {
+          if ( Object.keys( (Store.getState() as ReduxState).dataStorage.routes ).length > 0 )
+          {
+            this._itemsLoaded = true;
+            _unsubscribeFromBusList();
+            this.setState(this.state);
+          }
+        }
+      );
+    }
+  }
+
   render()
   {
     var location =
@@ -158,10 +198,12 @@ class App extends React.Component <AppProps, AppState>
         : ''
         ;
 
+    var searchBtn = this._itemsLoaded ? <SearchBtn/> : '';
+
     return (
     <div style={appWrapperStyle}>
       <BusList/>
-      <SearchBtn/>
+      {searchBtn}
       {location}
       <ZoomBtn icon="plus"  zoom={Map.zoomIn.bind(Map)}/>
       <ZoomBtn icon="minus" zoom={Map.zoomOut.bind(Map)}/>

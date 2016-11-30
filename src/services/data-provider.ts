@@ -18,7 +18,7 @@ function _Socket()
 _Socket.prototype.connect =
 function connect()
 {
-  socket = io(config.URL);
+  socket = io(location.href);
 
   socket.on(
     'connect',

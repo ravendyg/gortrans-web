@@ -82,12 +82,15 @@ function busList(state: VehicleMeta [] = [], action: ActionType)
         newState = state.slice(0);
       }
       newState.push( Object['assign']({}, action.payload.bus, {color}) );
+      localStorage.setItem('bus-list', JSON.stringify(newState));
     return newState;
 
     case Actions.REMOVE_BUS_FROM_LIST:
       color = state['find']( e => e.code === action.payload.bus.code ).color;
       availableColors.push( color );
-    return state.filter( e => e.code !== action.payload.bus.code );
+      newState = state.filter( e => e.code !== action.payload.bus.code );
+      localStorage.setItem('bus-list', JSON.stringify(newState));
+    return newState;
 
     default:
       return state;
