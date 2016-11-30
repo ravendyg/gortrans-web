@@ -308,7 +308,7 @@ function _initMap(lat: number, lng: number, zoom: number)
   map.on( 'moveend', rememberMapLocation.bind(this, map) );
   map.on( 'zomeend', rememberMapLocation.bind(this, map) );
 
-  L.tileLayer['provider']('OpenStreetMap.HOT').addTo(map);
+  L.tileLayer['provider']('OpenStreetMap.Mapnik').addTo(map);
   document.querySelector('.leaflet-control-zoom').remove();
 }
 
