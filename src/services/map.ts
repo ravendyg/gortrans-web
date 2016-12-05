@@ -479,9 +479,19 @@ function createMarker(data: busData, code: string, graph: string)
   var azimuth = Math.floor( (Math.abs(+data.azimuth+22.5)) / 45 )*45 % 360;
   marker =
     L.marker([data.lat, data.lng], {icon: icons[data.id_typetr+'-'+azimuth]})
-    .bindPopup( createPopupCode(data) )
+    .bindPopup( createPopupCode(data, '') )
     .bindTooltip(data.title, {permanent: true, direction: 'left'})
     ;
+  marker['_data'] = data;
+
+  marker.on(
+    'popupopen',
+    onMarkerPopupopen.bind(marker, code)
+  );
+  marker.on(
+    'popupclose',
+    onMarkerPopupclose.bind(marker)
+  );
 
   marker.addTo(this._map);
   marker.openTooltip();
@@ -497,10 +507,21 @@ function updateMarker(data: busData, code: string, graph: string)
 {
   var azimuth = Math.floor( (Math.abs(+data.azimuth+22.5)) / 45 )*45 % 360;
 
-  this._state[code].vh[graph].marker.setLatLng([data.lat, data.lng]);
-  this._state[code].vh[graph].marker.setIcon(icons[data.id_typetr+'-'+azimuth]);
-  this._state[code].vh[graph].marker.setPopupContent( createPopupCode(data) );
-  this._state[code].vh[graph].data = data;
+  var temp = this._state[code].vh[graph];
+  temp.marker['_data'] = data;
+
+  temp.marker.setLatLng([data.lat, data.lng]);
+  temp.marker.setIcon(icons[data.id_typetr+'-'+azimuth]);
+  if (temp.marker.getPopup().isOpen())
+  {
+    onMarkerPopupopen.call(temp.marker, code);
+  }
+  else
+  {
+    temp.marker.setPopupContent( createPopupCode(data, '') );
+  }
+  // temp.marker.setPopupContent( createPopupCode(data, '') );
+  temp.data = data;
 }
 
 function removeMarker(code: string, graph: string)
@@ -516,7 +537,7 @@ function removeMarker(code: string, graph: string)
   }
 }
 
-function createPopupCode(data: busData): string
+function createPopupCode(data: busData, rasp: string): string
 {
   var type, stopTime, stopName;
   switch (data.id_typetr)
@@ -539,9 +560,9 @@ function createPopupCode(data: busData): string
   var stops;
   var table
 
-  if (data.rasp.match(/\|/))
+  if (rasp.match(/\|/))
   {
-    stops = data.rasp.split('|').filter(entity);
+    stops = rasp.split('|').filter(entity);
     table = '<table><tbody>';
 
     for ( var stop of stops )
@@ -565,6 +586,47 @@ function createPopupCode(data: busData): string
   return text;
 }
 
+function onMarkerPopupopen(busCode: string)
+{
+  var self = this;
+  var data = this['_data'];
+
+  var requestId = (Math.random() * 1000).toFixed;
+  this['_requestId'] = requestId;
+
+  var content = ((this as L.Marker).getPopup().getContent() as string);
+  var popupTime = content.match(/[0-9]{2,2}\:[0-9]{2,2}\:[0-9]{2,2}/);
+  var table = content.match(/table/);
+  if (popupTime !== null && table !== null && popupTime[0] === data.time_nav.split(' ')[1])
+  {
+    // time hasn't changed, do nothing
+  }
+  else
+  {
+    request
+    .get(`${location.href}${config.GET_BUS_RAPS}?busCode=${busCode}&graph=${data.graph}`)
+    .end(
+      (err: Error, res: request.Response) =>
+      {
+        if (self['_requestId'] === requestId)
+        {
+          try
+          {
+            var popupText = createPopupCode(data, res.body.rasp);
+            (self as L.Marker).setPopupContent( popupText );
+          }
+          catch (err) {}
+        }
+      }
+    );
+  }
+}
+
+function onMarkerPopupclose()
+{
+  this['_requestId'] = '';
+}
+
 function onPopupopen(stop: Stop, stopId: string, event)
 {
   getStopSchedule(this, stop, stopId);
@@ -573,7 +635,7 @@ function onPopupopen(stop: Stop, stopId: string, event)
 function onPopupclose(stop: Stop, event)
 {
   // clear request and interval
-  this['_requestId'] = 0;
+  this['_requestId'] = '';
   clearInterval(this['_countDown']);
   (this as L.Marker).setPopupContent( createStopPopup(stop) );
 }

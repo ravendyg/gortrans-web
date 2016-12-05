@@ -92,7 +92,6 @@ declare type busData =
   lng: number,
   time_nav: string,
   azimuth: number,
-  rasp: string,
   speed: number,
   segment_order: string,
   ramp: string
