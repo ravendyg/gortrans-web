@@ -250,11 +250,11 @@ function create()
 
             stopMarkers[stopId].on(
               'popupopen',
-              onPopupopen.bind(this, stopId)
+              onPopupopen.bind(stopMarkers[stopId], newStops[stopId], stopId)
             );
             stopMarkers[stopId].on(
               'popupclose',
-              onPopupclose.bind(this)
+              onPopupclose.bind(stopMarkers[stopId], newStops[stopId])
             );
 
             map.addLayer( stopMarkers[stopId] );
@@ -565,25 +565,25 @@ function createPopupCode(data: busData): string
   return text;
 }
 
-function onPopupopen(stopId, event)
+function onPopupopen(stop: Stop, stopId: string, event)
 {
-  var targetPopup = <HTMLDivElement> document.getElementById('stop-' + stopId);
-  var targetStatus = <HTMLSpanElement> document.getElementById('stop-' + stopId + '-status');
-  var targetTimer = <HTMLSpanElement> document.getElementById('stop-' + stopId + '-timer');
-  getStopSchedule(stopId, targetPopup, targetStatus, targetTimer);
+  getStopSchedule(this, stop, stopId);
 }
 
-function onPopupclose(event)
+function onPopupclose(stop: Stop, event)
 {
-
+  // clear request and interval
+  this['_requestId'] = 0;
+  clearInterval(this['_countDown']);
+  (this as L.Marker).setPopupContent( createStopPopup(stop) );
 }
 
 function createStopPopup(stop: Stop): string
 {
   var text =
   `<p class="popup-stop-header">${stop.n}</p>
-    <div id="stop-${stop.id}">
-    </div>
+  <div id="stop-${stop.id}">
+  </div>
   <p class="popup-footer">
     <span id="stop-${stop.id}-status">Обновляю...</span>
     <span id="stop-${stop.id}-timer"></span>
@@ -594,7 +594,7 @@ function createStopPopup(stop: Stop): string
   return text;
 }
 
-function createStopPopupTable(forecasts: Forecast []): string
+function createStopPopupTable(stop: Stop, forecasts: Forecast []): string
 {
   var tbody =
     forecasts
@@ -603,12 +603,19 @@ function createStopPopupTable(forecasts: Forecast []): string
     .join('\n')
     ;
   var text =
-  `<table class="popup-stop-table">
-    <thead><th>Маршрут</th><th>Ближайший</th><th>Направление</th></thead>
-    <tbody>
-    ${tbody}
-    </tbody>
-  </table>`;
+  `<p class="popup-stop-header">${stop.n}</p>
+  <div id="stop-${stop.id}">
+    <table class="popup-stop-table">
+      <thead><th>Маршрут</th><th>Ближайший</th><th>Направление</th></thead>
+      <tbody>
+      ${tbody}
+      </tbody>
+    </table>
+  </div>
+  <p class="popup-footer">
+    <span id="stop-${stop.id}-status">До обновления: </span>
+    <span id="stop-${stop.id}-timer">60 сек</span>
+  </p>`;
 
   return text;
 }
@@ -654,65 +661,61 @@ function createStopPopupTableLine(forecast: Forecast): string
   return text;
 }
 
-function getStopSchedule(id: string, targetPopup: HTMLDivElement, targetStatus: HTMLSpanElement, targetTimer: HTMLSpanElement)
+function getStopSchedule(marker: L.Marker, stop: Stop, id: string)
 {
+  var _requestId = (Math.random() * 1000).toFixed();
+  marker['_requestId'] = _requestId;
+
   request
   .get(`${location.href}${config.GET_STOP_SCHEDULE}?stopId=${id}`)
   .end(
     (err: Error, res: request.Response) =>
     {
       var forecasts: Forecast [];
-      try
-      {
-        forecasts = JSON.parse(res.text).routes;
-        if (targetPopup)
+      if (marker['_requestId'] === _requestId)
+      { // this request is still valid
+        try
         {
-          targetPopup.innerHTML = createStopPopupTable(forecasts);
-          targetPopup.parentElement.style.width = '';
+          forecasts = JSON.parse(res.text).routes;
+          marker.setPopupContent( createStopPopupTable(stop, forecasts) );
+
           setTimeout(
             () =>
-            {
-              var popup = <HTMLDivElement> document.querySelector('.leaflet-popup');
-              if (popup)
-              {
-                popup.style.left = `-${Math.round(popup.offsetWidth/2)}px`;
-                var timeLeft = 59;
-                var countDown = setInterval(
-                  () =>
+            { // wait for new popup to be rendered
+              var targetStatus = <HTMLSpanElement> document.getElementById('stop-' + id + '-status');
+              var targetTimer = <HTMLSpanElement> document.getElementById('stop-' + id + '-timer');
+
+              var timeLeft = 60;
+              marker['_countDown'] = setInterval(
+                () =>
+                {
+                  if (targetTimer)
                   {
-                    if (targetTimer)
-                    {
-                      targetTimer.textContent = (--timeLeft) + ' сек';
-                    }
-                    if (timeLeft === 0)
-                    {
-                      clearInterval(countDown);
-                      targetStatus.textContent = 'Обновляю...';
-                      targetTimer.textContent = '';
-                      getStopSchedule(id, targetPopup, targetStatus, targetTimer);
-                    }
-                  },
-                  1000
-                );
-              }
+                    targetTimer.textContent = (--timeLeft) + ' сек';
+                  }
+                  if (timeLeft === 0)
+                  {
+                    clearInterval(marker['_countDown']);
+                    targetStatus.textContent = 'Обновляю...';
+                    targetTimer.textContent = '';
+                    getStopSchedule(marker, stop, id);
+                  }
+                },
+                1000
+              );
             }
           );
         }
-        if (targetStatus)
+        catch (err)
         {
-          targetStatus.textContent = 'До обновления: ';
-        }
-        if (targetTimer)
-        {
-          targetTimer.textContent = '60 сек';
-        }
-      }
-      catch (err)
-      {
-        forecasts = [];
-        if (targetStatus)
-        {
-          targetStatus.textContent = 'Ошибка обновления';
+          var targetStatus = <HTMLSpanElement> document.getElementById('stop-' + id + '-status');
+          var targetTimer = <HTMLSpanElement> document.getElementById('stop-' + id + '-timer');
+          forecasts = [];
+          if (targetStatus)
+          {
+            targetStatus.textContent = 'Ошибка обновления';
+            targetTimer.textContent = '';
+          }
         }
       }
     }
