@@ -81,7 +81,7 @@ function busList(
     return newState;
 
     case Actions.REMOVE_BUS_FROM_LIST:
-      color = state['find']( e => e.code === action.payload.bus.code ).color;
+      color = state.buses.find( e => e.code === action.payload.bus.code ).color;
       availableColors.push( color );
       newState.buses = state.buses.filter( e => e.code !== action.payload.bus.code );
       newState.stopsList = stopList(newState.buses);
@@ -176,15 +176,18 @@ function mapVehiclesIntoCodes(
   type: number
 ): dataStorageStore
 {
-  var list: ListMarsh = data['find']( e => e.type === type) || { ways: [] };
+  var list: ListMarsh = data.find( e => +e.type === type);
   target.routes[vehicle] = [];
-  for ( let way of list.ways )
+  if (list)
   {
-    target.routes[vehicle].push({
-      code: [type+1, way.marsh, 'W', way.name].join('-'),
-      title: way.name,
-      color: 'black'
-    });
+    for ( let way of list.ways )
+    {
+      target.routes[vehicle].push({
+        code: [type+1, way.marsh, 'W', way.name].join('-'),
+        title: way.name,
+        color: 'black'
+      });
+    }
   }
 
   return target;
