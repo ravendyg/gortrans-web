@@ -41,7 +41,7 @@ export class BusList extends React.Component <BusListProps, BusListState>
       Store.subscribe(
         () =>
         {
-          let items = (Store.getState() as ReduxState).busList;
+          let items = (Store.getState() as ReduxState).busList.buses;
           if ( this.state.items !== items )
           {
             this.setState({ items });

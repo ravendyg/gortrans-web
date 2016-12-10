@@ -7,7 +7,7 @@ import {Actions} from './action-creators';
 
 const app =
 combineReducers({
-  busList, connection, dataStorage, stopList
+  busList, connection, dataStorage
 });
 
 export const Store = createStore(app);
@@ -25,47 +25,41 @@ for ( let color of allColors )
   availableColors.push( color );
 }
 
-function stopList(state: {[stopId: string]: Stop} = {}, action: ActionType)
+function stopList(buses)
 {
-  switch ( action.type )
-  {
-    case Actions.RELOAD_STOPS:
-      var out = {};
-      var buses = (Store.getState() as ReduxState).busList;
-      var busStops = (Store.getState() as ReduxState).dataStorage.busStops;
-      var stops = (Store.getState() as ReduxState).dataStorage.stops;
-      var currentBusStops, bus, stopId;
-      for ( bus of buses )
+    var out = {};
+    var busStops = (Store.getState() as ReduxState).dataStorage.busStops;
+    var stops = (Store.getState() as ReduxState).dataStorage.stops;
+    var currentBusStops, bus, stopId;
+    for ( bus of buses )
+    {
+      currentBusStops = busStops[bus.code];
+      for (stopId of Object.keys(currentBusStops) )
       {
-        currentBusStops = busStops[bus.code];
-        for (stopId of Object.keys(currentBusStops) )
+        if ( !out[stopId] )
         {
-          if ( !out[stopId] )
-          {
-            out[stopId] = stops[stopId];
-          }
+          out[stopId] = stops[stopId];
         }
       }
-    return out;
-
-    default:
-    return state;
-  }
+    }
+  return out;
 }
 
-function busList(state: VehicleMeta [] = [], action: ActionType)
+function busList(
+  state: busList = {buses: [], stopsList: {}},
+  action: ActionType)
 {
-  var newState = [];
+  var newState: busList = {buses: [], stopsList: {}};
   var color;
   var i;
 
   switch( action.type )
   {
     case Actions.ADD_BUS_TO_LIST:
-      if ( state.length >= config.NUMBER_OF_BUSES_LIMIT )
+      if ( state.buses.length >= config.NUMBER_OF_BUSES_LIMIT )
       { // unshift and reuse color
         color = state[0].color;
-        newState = state.slice(1);
+        newState.buses = state.buses.slice(1);
       }
       else
       {
@@ -79,17 +73,19 @@ function busList(state: VehicleMeta [] = [], action: ActionType)
             break;
           }
         }
-        newState = state.slice(0);
+        newState.buses = state.buses.slice(0);
       }
-      newState.push( Object['assign']({}, action.payload.bus, {color}) );
-      localStorage.setItem('bus-list', JSON.stringify(newState));
+      newState.buses.push( Object['assign']({}, action.payload.bus, {color}) );
+      newState.stopsList = stopList(newState.buses);
+      localStorage.setItem('bus-list', JSON.stringify(newState.buses));
     return newState;
 
     case Actions.REMOVE_BUS_FROM_LIST:
       color = state['find']( e => e.code === action.payload.bus.code ).color;
       availableColors.push( color );
-      newState = state.filter( e => e.code !== action.payload.bus.code );
-      localStorage.setItem('bus-list', JSON.stringify(newState));
+      newState.buses = state.buses.filter( e => e.code !== action.payload.bus.code );
+      newState.stopsList = stopList(newState.buses);
+      localStorage.setItem('bus-list', JSON.stringify(newState.buses));
     return newState;
 
     default:

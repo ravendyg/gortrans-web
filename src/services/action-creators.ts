@@ -15,8 +15,6 @@ export enum Actions
   LOAD_LIST_OF_TRASSES = 8,
   LOAD_LIST_OF_STOPS = 9,
 
-  RELOAD_STOPS = 10,
-
   UPDATE_STATE = 7,
 
 };
@@ -42,7 +40,7 @@ export const ActionCreators =
   loadListOfStops:
   (
     {stops, busStops}:
-    { stops: { [stopId: string]: Stop }, busStops: BusStops}
+    {stops: { [stopId: string]: Stop }, busStops: BusStops}
   ) =>
   {
     return {
@@ -72,14 +70,6 @@ export const ActionCreators =
     return {
       type: Actions.UPDATE_STATE,
       payload: { state }
-    }
-  },
-
-  reloadStops: () =>
-  {
-    return {
-      type: Actions.RELOAD_STOPS,
-      payload: {}
     }
   },
 

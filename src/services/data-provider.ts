@@ -24,7 +24,7 @@ function connect()
     'connect',
     () =>
     {
-      var listOfSelectedVehicles = (Store.getState() as ReduxState).busList;
+      var listOfSelectedVehicles = (Store.getState() as ReduxState).busList.buses;
 
       for ( var vehicle of listOfSelectedVehicles)
       {

@@ -222,7 +222,7 @@ function create()
     {
       var map = <L.Map> this._map;
       var stopId: string;
-      var newStops = (Store.getState() as ReduxState).stopList;
+      var newStops = (Store.getState() as ReduxState).busList.stopsList;
       if (newStops !== oldStops)
       {
         // first remove those that missing on the new list
@@ -320,7 +320,7 @@ function addVehicle(state: State)
   var i: number;
   var selectedVehicle: VehicleMeta;
 
-  var listOfSelectedVehicles = (Store.getState() as ReduxState).busList;
+  var listOfSelectedVehicles = (Store.getState() as ReduxState).busList.buses;
 
   for ( busCode of Object.keys(state) )
   {
