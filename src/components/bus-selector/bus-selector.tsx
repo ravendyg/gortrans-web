@@ -91,7 +91,7 @@ export class BusSelector extends React.Component <BusSelectorProps, BusSelectorS
       {
         itemsCopy[i].vehicles =
           this._data.routes[ this._typeKeys[i] ]
-          .filter( e => e.title.match(value) )
+          .filter( e => value !== "" && e.title.match(value) )
           ;
       }
       let tempState =
