@@ -142,11 +142,13 @@ export class BusSelector extends React.Component <BusSelectorProps, BusSelectorS
 
           <div className="bus-groups-wrapper">
             {this.state.items.map( e =>
-              <BusGroup
-                key={e.name}
-                item={e}
-                closeCb={this.closeMenu.bind(this)}
-              />
+              (e.vehicles && e.vehicles.length > 0)
+                ? <BusGroup
+                  key={e.name}
+                  item={e}
+                  closeCb={this.closeMenu.bind(this)}
+                />
+                : ''
             )}
           </div>
         </div>
