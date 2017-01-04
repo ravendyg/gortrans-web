@@ -18,7 +18,7 @@ declare type ActionType =
 
 declare interface SocketService
 {
-  connect (): void;
+  connect (key: string): void;
   addBusListener (code: string): void;
   removeBusListener (code: string): void;
 }
@@ -37,20 +37,7 @@ declare type Way =
   stope: string
 };
 
-declare type ReduxState =
-{
-  dataStorage: dataStorageStore,
-  busList: busList,
-  stopList: {[stopId: string]: Stop}
-};
-
-declare type busList =
-{
-  buses: VehicleMeta [],
-  stopsList: {[stopId: string]: Stop}
-};
-
-declare type dataStorageStore =
+declare type Info =
 {
   routes:
   {
@@ -64,11 +51,57 @@ declare type dataStorageStore =
       name: string
     }
   },
-  vehicles: StateWithMarkers,
-  trasses: { [busCode: string]: Point []},
+  routeCodes: string [],
+  trasses: { [busCode: string]: Point [] },
   stops: { [stopId: string]: Stop },
   busStops: BusStops
 };
+
+declare type RawInfo =
+{
+  routes: ListMarsh [],
+  routeCodes: string [],
+  trasses: { [busCode: string]: Point [] },
+  stops: { [stopId: string]: Stop },
+  busStops: BusStops
+};
+
+declare type ReduxState =
+{
+  // dataStorage: dataStorageStore,
+  dataLoaded: boolean,
+  busList: busList,
+  stopList: {[stopId: string]: Stop},
+  vehicles: StateWithMarkers,
+};
+
+declare type busList =
+{
+  buses: VehicleMeta [],
+  stopsList: {[stopId: string]: Stop},
+  trasses: {[stopId: string]: Point []},
+  zoom: boolean
+};
+
+// declare type dataStorageStore =
+// {
+//   routes:
+//   {
+//     [type: string]: VehicleMeta []
+//   },
+//   typeNames:
+//   {
+//     [type: string]:
+//     {
+//       id: number,
+//       name: string
+//     }
+//   },
+//   vehicles: StateWithMarkers,
+//   trasses: { [busCode: string]: Point []},
+//   stops: { [stopId: string]: Stop },
+//   busStops: BusStops
+// };
 
 declare type VehicleMeta =
 {

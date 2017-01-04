@@ -4,7 +4,7 @@
 import * as request from 'superagent';
 
 import {ActionCreators} from './action-creators';
-import {Store} from './store';
+import {Store, getInfo} from './store';
 import { config } from '../config';
 
 require("./map.less");
@@ -214,54 +214,104 @@ function create()
   _initMap.call(this, mapParams.lat, mapParams.lng, mapParams.zoom);
 
 
+  var _busList: busList = null;
   var oldStops: {[stopId: string]: Stop} = {};
-  var stopMarkers: {[stopId: string]: L.Marker } = {};
+  this.stopMarkers = <{[stopId: string]: L.Marker }> {};
+
+  this.trassLines = <{[stopId: string]: L.Polyline }> {};
 
   Store.subscribe(
     () =>
     {
+      if (_busList !== (Store.getState() as ReduxState).busList)
+      { // kepp reference to the state
+        _busList = (Store.getState() as ReduxState).busList;
+      }
+      else
+      { // smth else changed, not interested
+        return;
+      }
+
       var map = <L.Map> this._map;
       var stopId: string;
-      var newStops = (Store.getState() as ReduxState).busList.stopsList;
-      if (newStops !== oldStops)
+      var newStops = _busList.stopsList;
+
+      // first remove those that missing on the new list
+      // and there is a corresponding marker (it should be)
+      for ( stopId of Object.keys(oldStops) )
       {
-        // first remove those that missing on the new list
-        // and there is a corresponding marker (it should be)
-        for ( stopId of Object.keys(oldStops) )
+        if ( !newStops[stopId] && this.stopMarkers[stopId] )
         {
-          if ( !newStops[stopId] && stopMarkers[stopId] )
-          {
-            map.removeLayer( stopMarkers[stopId] );
-            delete stopMarkers[stopId];
-          }
+          map.removeLayer( this.stopMarkers[stopId] );
+          delete this.stopMarkers[stopId];
         }
-        // then add new stops
-        for ( stopId of Object.keys(newStops) )
+      }
+      // then add new stops
+      for ( stopId of Object.keys(newStops) )
+      {
+        if ( !oldStops[stopId] && !this.stopMarkers[stopId] )
         {
-          if ( !oldStops[stopId] && !stopMarkers[stopId] )
-          {
-            stopMarkers[stopId] =
-              L.marker(
-                [newStops[stopId].lat, newStops[stopId].lng],
-                {icon: icons.stop }
-              );
-
-            stopMarkers[stopId].bindPopup( createStopPopup(newStops[stopId]) );
-
-            stopMarkers[stopId].on(
-              'popupopen',
-              onPopupopen.bind(stopMarkers[stopId], newStops[stopId], stopId)
-            );
-            stopMarkers[stopId].on(
-              'popupclose',
-              onPopupclose.bind(stopMarkers[stopId], newStops[stopId])
+          this.stopMarkers[stopId] =
+            L.marker(
+              [newStops[stopId].lat, newStops[stopId].lng],
+              {icon: icons.stop }
             );
 
-            map.addLayer( stopMarkers[stopId] );
+          this.stopMarkers[stopId].bindPopup( createStopPopup(newStops[stopId]) );
+
+          this.stopMarkers[stopId].on(
+            'popupopen',
+            onPopupopen.bind(this.stopMarkers[stopId], newStops[stopId], stopId)
+          );
+          this.stopMarkers[stopId].on(
+            'popupclose',
+            onPopupclose.bind(this.stopMarkers[stopId], newStops[stopId])
+          );
+
+          map.addLayer( this.stopMarkers[stopId] );
+        }
+      }
+      // finaly replace
+      oldStops = newStops;
+
+      var newTrasses = _busList.trasses;
+
+      for (var busCode of Object.keys(this.trassLines))
+      {
+        if (!_busList.trasses[busCode])
+        {
+           map.removeLayer( this.trassLines[busCode] );
+           delete this.trassLines[busCode];
+        }
+      }
+      for (busCode of Object.keys(_busList.trasses))
+      {
+        if (!this.trassLines[busCode])
+        {
+          // draw path
+          var trassPoints: Point [] = _busList.trasses[busCode];
+          var latLng: [number, number] [] =
+            (trassPoints || [])
+            .map( e => <[number, number]>[e.lat, e.lng]);
+          var color;
+          for (var _bus of _busList.buses)
+          {
+            if (_bus.code === busCode)
+            {
+              color = _bus.color;
+              break;
+            }
+          }
+          this.trassLines[busCode] = <L.Polyline> L.polyline( latLng, { color } );
+          this.trassLines[busCode].addTo(map);
+          if (_busList.zoom)
+          {
+            setTimeout(
+              () => { this.zoomToBusRote(busCode); },
+              50
+            );
           }
         }
-        // finaly replace
-        oldStops = newStops;
       }
     }
   );
@@ -334,33 +384,7 @@ function addVehicle(state: State)
           busCode, graph
         );
       }
-
-      // draw path
-      var trassPoints: Point [] = (Store.getState() as ReduxState).dataStorage.trasses[busCode];
-      var latLng: [number, number] [] =
-        (trassPoints || [])
-        .map( e => <[number, number]>[e.lat, e.lng]);
-      // select color
-      for ( selectedVehicle of listOfSelectedVehicles )
-      {
-        if ( selectedVehicle.code === busCode )
-        {
-          color = selectedVehicle.color;
-          break;
-        }
-      }
-      this._state[busCode].line = <L.Polyline> L.polyline( latLng, { color } );
-      this._state[busCode].color = color;
-      Store.dispatch( ActionCreators.updateState(this._state) );
-
-      this._state[busCode].line.addTo( this._map );
     }
-
-    setTimeout(
-      () => { this.zoomToBusRote(busCode); },
-      50
-    );
-
   }
 }
 
@@ -408,7 +432,7 @@ function removeVehicle(busCode: string)
     }
     try
     {
-      this._map.removeLayer( this._state[busCode].line );
+      // this._map.removeLayer( this._state[busCode].line );
       // availableColors.push( this._state[busCode].color );
       delete this._state[busCode];
     }
@@ -436,10 +460,9 @@ function cleanBusMarkers()
 _Map.prototype.zoomToBusRote =
 function zoomToBusRote(busCode: string)
 {
-  var buses = (Store.getState() as ReduxState).dataStorage.vehicles;
-  if ( buses[busCode] && buses[busCode].line )
+  if (this.trassLines[busCode])
   {
-    var bounds = buses[busCode].line.getBounds();
+    var bounds = this.trassLines[busCode].getBounds();
     (this._map as L.Map).fitBounds(bounds, {});
   }
 }
@@ -447,15 +470,13 @@ function zoomToBusRote(busCode: string)
 _Map.prototype.zoomIn =
 function zoomIn()
 {
-  var map = <L.Map> this._map;
-  map.zoomIn();
+  this._map.zoomIn();
 }
 
 _Map.prototype.zoomOut =
 function zoomOut()
 {
-  var map = <L.Map> this._map;
-  map.zoomOut();
+  this._map.zoomOut();
 }
 
 const Map: iMap = new _Map();

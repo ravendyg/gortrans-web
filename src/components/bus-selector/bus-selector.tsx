@@ -7,7 +7,7 @@ import * as React from 'react';
 import { findDOMNode } from 'react-dom';
 import { browserHistory } from 'react-router';
 
-import {Store} from './../../services/store';
+import {getInfo} from './../../services/store';
 
 import {BusGroup} from './bus-group';
 import { BackBtn } from './../btns/back-btn';
@@ -28,11 +28,24 @@ interface BusSelectorProps
 
 export class BusSelector extends React.Component <BusSelectorProps, BusSelectorState>
 {
-  private _index: number;
   private _timer: number;
   private _typeKeys: string [];
 
-  private _data: dataStorageStore;
+  private _data:
+  {
+    routes:
+    {
+      [type: string]: VehicleMeta []
+    },
+    typeNames:
+    {
+      [type: string]:
+      {
+        id: number,
+        name: string
+      }
+    }
+  };
 
   constructor ()
   {
@@ -44,7 +57,7 @@ export class BusSelector extends React.Component <BusSelectorProps, BusSelectorS
       items: []
     };
 
-    this._data = (Store.getState() as ReduxState).dataStorage;
+    this._data = getInfo();
     this._typeKeys = Object.keys( this._data.typeNames );
 
     for ( var type of this._typeKeys )
@@ -54,8 +67,6 @@ export class BusSelector extends React.Component <BusSelectorProps, BusSelectorS
         vehicles: []
       });
     }
-
-    this._index = 0;
   }
 
   public componentDidMount()
@@ -77,21 +88,19 @@ export class BusSelector extends React.Component <BusSelectorProps, BusSelectorS
     clearTimeout(this._timer);
     this._timer =
       setTimeout(
-        this._checkTimeToSearch.bind(this, ++this._index, input.target.value),
+        this._checkTimeToSearch.bind(this, input.target.value),
         250
       );
   }
 
-  private _checkTimeToSearch(index: number, value: string)
+  private _checkTimeToSearch(value: string)
   {
-    if ( index === this._index )
-    {
       let itemsCopy = this.state.items;
       for ( let i = 0; i < this._typeKeys.length; i++ )
       {
         itemsCopy[i].vehicles =
           this._data.routes[ this._typeKeys[i] ]
-          .filter( e => e.title.match(value) )
+          .filter( e => value !== "" && e.title.match(value) )
           ;
       }
       let tempState =
@@ -100,7 +109,6 @@ export class BusSelector extends React.Component <BusSelectorProps, BusSelectorS
         items: itemsCopy
       };
       this.setState( tempState );
-    }
   }
 
   public closeMenu(event)
@@ -123,7 +131,7 @@ export class BusSelector extends React.Component <BusSelectorProps, BusSelectorS
 
   render()
   {
-    let backBtn = navigator.userAgent.toLowerCase().match(/(iphone)/)
+    let backBtn = navigator.userAgent.toLowerCase().match(/(iphone|ipad)/)
       ? <BackBtn action={this.closeMenu.bind(this)} />
       : ''
       ;
@@ -142,11 +150,13 @@ export class BusSelector extends React.Component <BusSelectorProps, BusSelectorS
 
           <div className="bus-groups-wrapper">
             {this.state.items.map( e =>
-              <BusGroup
-                key={e.name}
-                item={e}
-                closeCb={this.closeMenu.bind(this)}
-              />
+              (e.vehicles && e.vehicles.length > 0)
+                ? <BusGroup
+                  key={e.name}
+                  item={e}
+                  closeCb={this.closeMenu.bind(this)}
+                />
+                : ''
             )}
           </div>
         </div>

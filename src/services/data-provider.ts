@@ -16,9 +16,9 @@ function _Socket()
 };
 
 _Socket.prototype.connect =
-function connect()
+function connect(key: string)
 {
-  socket = io(location.href);
+  socket = io.connect(location.href, {query: `apiKey=${key}`});
 
   socket.on(
     'connect',
@@ -28,7 +28,7 @@ function connect()
 
       for ( var vehicle of listOfSelectedVehicles)
       {
-        this.addBusListener(vehicle.code);
+        this.addBusListener(vehicle.code, false);
       }
     }
   );

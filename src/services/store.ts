@@ -6,11 +6,48 @@ import {config} from '../config';
 import {Actions} from './action-creators';
 
 const app =
-combineReducers({
-  busList, connection, dataStorage
-});
+  combineReducers({
+    busList, connection, dataLoaded, vehicles //dataStorage
+  });
 
 export const Store = createStore(app);
+
+
+var info: Info =
+{
+  routes: {},
+  typeNames:
+   {
+     'bus':     {id: 0, name: 'Автобусы'},
+     'trolley': {id: 1, name: 'Троллейбусы'},
+     'tram':    {id: 2, name: 'Трамваи'},
+     'small':   {id: 7, name: 'Маршрутки'}
+   },
+  routeCodes: [],
+  trasses: {},
+  stops: {},
+  busStops: {}
+};
+
+export function loadInfoToStore(rawInfo: RawInfo): void
+{
+  let temp = { routes: {} };
+  temp = mapVehiclesIntoCodes(rawInfo.routes, temp, 'bus', 0);
+  temp = mapVehiclesIntoCodes(rawInfo.routes, temp, 'trolley', 1);
+  temp = mapVehiclesIntoCodes(rawInfo.routes, temp, 'tram', 2);
+  temp = mapVehiclesIntoCodes(rawInfo.routes, temp, 'small', 7);
+
+  info.routes = temp.routes;
+  info.routeCodes = rawInfo.routeCodes;
+  info.trasses = rawInfo.trasses;
+  info.stops = rawInfo.stops;
+  info.busStops = rawInfo.busStops;
+};
+
+export function getInfo(): Info
+{
+  return info;
+}
 
 
 
@@ -25,11 +62,14 @@ for ( let color of allColors )
   availableColors.push( color );
 }
 
-function stopList(buses)
+/**
+ * select stops for given buses
+ */
+function getStopList(buses: VehicleMeta [])
 {
     var out = {};
-    var busStops = (Store.getState() as ReduxState).dataStorage.busStops;
-    var stops = (Store.getState() as ReduxState).dataStorage.stops;
+    var busStops = info.busStops;
+    var stops = info.stops;
     var currentBusStops, bus, stopId;
     for ( bus of buses )
     {
@@ -45,11 +85,24 @@ function stopList(buses)
   return out;
 }
 
+/**
+ * select trasses for given buses
+ */
+function getTrassList(buses: VehicleMeta [])
+{
+  var out = {};
+  for (var bus of buses)
+  {
+    out[bus.code] = info.trasses[bus.code];
+  }
+  return out;
+}
+
 function busList(
-  state: busList = {buses: [], stopsList: {}},
+  state: busList = {buses: [], stopsList: {}, trasses: {}, zoom: false},
   action: ActionType)
 {
-  var newState: busList = {buses: [], stopsList: {}};
+  var newState: busList = {buses: [], stopsList: {}, trasses: {}, zoom: false};
   var color;
   var i;
 
@@ -76,7 +129,9 @@ function busList(
         newState.buses = state.buses.slice(0);
       }
       newState.buses.push( Object['assign']({}, action.payload.bus, {color}) );
-      newState.stopsList = stopList(newState.buses);
+      newState.stopsList = getStopList(newState.buses);
+      newState.trasses = getTrassList(newState.buses);
+      newState.zoom = action.payload.zoom;
       localStorage.setItem('bus-list', JSON.stringify(newState.buses));
     return newState;
 
@@ -84,7 +139,8 @@ function busList(
       color = state.buses.find( e => e.code === action.payload.bus.code ).color;
       availableColors.push( color );
       newState.buses = state.buses.filter( e => e.code !== action.payload.bus.code );
-      newState.stopsList = stopList(newState.buses);
+      newState.stopsList = getStopList(newState.buses);
+      newState.trasses = getTrassList(newState.buses);
       localStorage.setItem('bus-list', JSON.stringify(newState.buses));
     return newState;
 
@@ -106,75 +162,109 @@ function connection(state: boolean = false, action: ActionType)
   }
 };
 
-function dataStorage
-( state: dataStorageStore =
- {
-   routes: {},
-   trasses: {},
-   typeNames:
-   {
-     'bus':     {id: 0, name: 'Автобусы'},
-     'trolley': {id: 1, name: 'Троллейбусы'},
-     'tram':    {id: 2, name: 'Трамваи'},
-     'small':   {id: 7, name: 'Маршрутки'}
-   },
-   vehicles: {},
-   stops: {},
-   busStops: {}
-  },
-  action: ActionType
-)
+function dataLoaded(state: boolean = false, action: ActionType)
 {
-  var out: dataStorageStore = <dataStorageStore>{};
-  Object['assign'](out, state);
-
   switch( action.type )
   {
-    case Actions.LOAD_LIST_OF_ROUTES:
-      Object['assign'](out, {routes: {}} );
-      // create lists
-      out = mapVehiclesIntoCodes(action.payload.routes, out, 'bus', 0);
-      out = mapVehiclesIntoCodes(action.payload.routes, out, 'trolley', 1);
-      out = mapVehiclesIntoCodes(action.payload.routes, out, 'tram', 2);
-      out = mapVehiclesIntoCodes(action.payload.routes, out, 'small', 7);
-    return out;
+    case Actions.UPDATE_BUS_DATA:
+      return true;
+    default:
+      return state;
+  }
+}
 
-    case Actions.LOAD_LIST_OF_TRASSES:
-      Object['assign'](out, {trasses: {}} );
-
-      for ( var busCode of Object.keys(action.payload.trasses) )
-      {
-        try
-        {
-          out.trasses[busCode] = JSON.parse( action.payload.trasses[busCode] ).trasses[0].r[0].u;
-        }
-        catch (err)
-        {
-          console.error(err, 'parsing trass');
-          out.trasses[busCode] = [];
-        }
-      }
-    return out;
-
-    case Actions.UPDATE_STATE:
-      Object['assign'](out, {vehicles: action.payload.state} );
-    return out;
-
-    case Actions.LOAD_LIST_OF_STOPS:
-      Object['assign'](out, {stops: action.payload.stops, busStops: action.payload.busStops} );
-    return out;
+function vehicles(state: {} = {}, action: ActionType)
+{
+  switch( action.type )
+  {
+    case Actions.UPDATE_VEHICLES:
+    return action.payload.state;
 
     default:
     return state;
   }
-};
+}
+
+// function dataStorage
+// ( state: dataStorageStore =
+//  {
+//    routes: {},
+//    trasses: {},
+//    typeNames:
+//    {
+//      'bus':     {id: 0, name: 'Автобусы'},
+//      'trolley': {id: 1, name: 'Троллейбусы'},
+//      'tram':    {id: 2, name: 'Трамваи'},
+//      'small':   {id: 7, name: 'Маршрутки'}
+//    },
+//    vehicles: {},
+//    stops: {},
+//    busStops: {}
+//   },
+//   action: ActionType
+// )
+// {
+//   var out: dataStorageStore = <dataStorageStore>{};
+//   Object['assign'](out, state);
+
+//   switch( action.type )
+//   {
+//     // case Actions.LOAD_LIST_OF_ROUTES:
+//     //   Object['assign'](out, {routes: {}} );
+//     //   // create lists
+//     //   out = mapVehiclesIntoCodes(action.payload.routes, out, 'bus', 0);
+//     //   out = mapVehiclesIntoCodes(action.payload.routes, out, 'trolley', 1);
+//     //   out = mapVehiclesIntoCodes(action.payload.routes, out, 'tram', 2);
+//     //   out = mapVehiclesIntoCodes(action.payload.routes, out, 'small', 7);
+//     // return out;
+
+//     // case Actions.LOAD_LIST_OF_TRASSES:
+//     //   Object['assign'](out, {trasses: {}} );
+
+//     //   for ( var busCode of Object.keys(action.payload.trasses) )
+//     //   {
+//     //     try
+//     //     {
+//     //       out.trasses[busCode] = JSON.parse( action.payload.trasses[busCode] ).trasses[0].r[0].u;
+//     //     }
+//     //     catch (err)
+//     //     {
+//     //       console.error(err, 'parsing trass');
+//     //       out.trasses[busCode] = [];
+//     //     }
+//     //   }
+//     // return out;
+
+//     // case Actions.UPDATE_STATE:
+//     //   Object['assign'](out, {vehicles: action.payload.state} );
+//     // return out;
+
+//     // case Actions.LOAD_LIST_OF_STOPS:
+//     //   Object['assign'](out, {stops: action.payload.stops, busStops: action.payload.busStops} );
+//     // return out;
+
+//     default:
+//     return state;
+//   }
+// };
 
 function mapVehiclesIntoCodes(
   data: ListMarsh [],
-  target: dataStorageStore,
+  target:
+  {
+    routes:
+    {
+      [type: string]: VehicleMeta []
+    }
+  },
   vehicle: string,
   type: number
-): dataStorageStore
+):{
+    routes:
+    {
+      [type: string]: VehicleMeta []
+    }
+  }
 {
   var list: ListMarsh = data.find( e => +e.type === type);
   target.routes[vehicle] = [];

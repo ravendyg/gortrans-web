@@ -1,10 +1,10 @@
-/// <reference path="../typings/index.d.ts" />
-
 'use strict';
 
 import * as React from 'react';
 import { render } from 'react-dom';
 import { Router, Route, Link, browserHistory } from 'react-router';
+
+import * as bb from 'bluebird';
 
 import { config } from './config';
 
@@ -19,7 +19,7 @@ import {Map} from './services/map';
 import {Socket} from './services/data-provider';
 
 import {ActionCreators} from './services/action-creators';
-import {Store} from './services/store';
+import { Store, loadInfoToStore } from './services/store';
 import * as UserActions from './services/user-actions';
 
 import * as request from 'superagent';
@@ -28,19 +28,24 @@ import * as localForage from 'localforage';
 require('./app.less');
 require('./components/btns/btns.less');
 
-Socket.connect();
+
+var key = localStorage.getItem('nskgortrans-api-key');
+if (!key)
+{
+  key = Math.random().toString().slice(2);
+  localStorage.setItem('nskgortrans-api-key', key);
+}
+
+
+Socket.connect(key);
 Map.create();
 
-Promise.all([
-  localForage.getItem('list-of-routes'),
-  localForage.getItem('list-of-trasses'),
-  localForage.getItem('list-of-stops')
-])
+localForage.getItem('gortrans-info')
 .then(
-  ([routes, trasses, stopsData]: any []) =>
+  ({routes, trasses, stopsData}: {[index: string]: any}): void =>
   {
     makeRequestForBasicData(
-      routes || {routes: [], timestamp: 0},
+      routes || {routes: [], routeCodes: [], timestamp: 0},
       trasses || {trasses: {}, timestamp: 0},
       stopsData || {stops: {}, busStops: {}, timestamp: 0 }
     );
@@ -51,7 +56,7 @@ Promise.all([
   {
     console.error(err, 'get timestamp from localForage');
     makeRequestForBasicData(
-      {routes: [], timestamp: 0},
+      {routes: [], routeCodes: [], timestamp: 0},
       {trasses: {}, timestamp: 0},
       {stops: {}, busStops: {}, timestamp: 0}
     );
@@ -59,13 +64,13 @@ Promise.all([
 );
 
 function makeRequestForBasicData(
-  routes: { routes: ListMarsh [], timestamp: number },
+  routes: { routes: ListMarsh [], routeCodes: string [], timestamp: number },
   trasses: { trasses: { [busCode: string]: string }, timestamp: number },
   stopsData: { stops: { [stopId: string]: Stop }, busStops: BusStops, timestamp: number }
 )
 {
   request
-  .get(`${location.href}${config.SYNC_ROUTE}?routestimestamp=${routes.timestamp}&trassestimestamp=${trasses.timestamp}`)
+  .get(`${location.href}${config.SYNC_ROUTE}?routestimestamp=${routes.timestamp}&trassestimestamp=${trasses.timestamp}&&api_key=${key}`)
   .end(
     (err: Error, res: request.Response) =>
     {
@@ -75,38 +80,42 @@ function makeRequestForBasicData(
       }
       else
       {
+        var updated = false;
+
         if ( res.body.routes.timestamp > routes.timestamp )
         { // if not, don't need to update - it's the same
-          localForage.setItem('list-of-routes', res.body.routes);
-          Store.dispatch( ActionCreators.loadListOfRoutes(res.body.routes.routes) );
+          updated = true;
         }
         else
         {
-          Store.dispatch( ActionCreators.loadListOfRoutes(routes.routes) );
+          res.body.routes = routes;
         }
 
         if ( res.body.trasses.timestamp > trasses.timestamp )
         { // if not, don't need to update - it's the same
-          Object['assign']( trasses.trasses, res.body.trasses.trasses );
-          trasses.timestamp = res.body.trasses.timestamp;
-
-          localForage.setItem('list-of-trasses', trasses);
-          Store.dispatch( ActionCreators.loadListOfTrasses(trasses.trasses) );
+          updated = true;
         }
         else
         {
-          Store.dispatch( ActionCreators.loadListOfTrasses(trasses.trasses) );
+          res.body.trasses = trasses;
+          res.body.stopsData = stopsData;
         }
 
-        if ( res.body.stopsData.timestamp > stopsData.timestamp )
-        { // if not, don't need to update - it's the same
-          localForage.setItem('list-of-stops', res.body.stopsData);
-          Store.dispatch( ActionCreators.loadListOfStops(res.body.stopsData) );
-        }
-        else
+        if (updated)
         {
-          Store.dispatch( ActionCreators.loadListOfStops(res.body.stopsData) );
+          localForage.setItem('gortrans-info', res.body);
         }
+
+        loadInfoToStore({
+          routes: res.body.routes.routes,
+          routeCodes: res.body.routes.routeCodes,
+          trasses: res.body.trasses.trasses,
+          stops: res.body.stopsData.stops,
+          busStops: res.body.stopsData.busStops,
+        });
+
+        Store.dispatch( ActionCreators.loadData() );
+
 
         // show buses from the previous visit
         var buses: VehicleMeta [];
@@ -115,7 +124,7 @@ function makeRequestForBasicData(
           buses = JSON.parse( localStorage.getItem('bus-list') );
           for (var _bus of buses)
           {
-            UserActions.addBus(_bus);
+            UserActions.addBus(_bus, false);
           }
         }
         catch (err) {}
@@ -169,7 +178,7 @@ class App extends React.Component <AppProps, AppState>
 
   public componentDidMount()
   {
-    if ( Object.keys( (Store.getState() as ReduxState).dataStorage.routes ).length > 0 )
+    if ( (Store.getState() as ReduxState).dataLoaded )
     {
       this._itemsLoaded = true;
     }
@@ -179,7 +188,7 @@ class App extends React.Component <AppProps, AppState>
       Store.subscribe(
         () =>
         {
-          if ( Object.keys( (Store.getState() as ReduxState).dataStorage.routes ).length > 0 )
+          if ( (Store.getState() as ReduxState).dataLoaded )
           {
             this._itemsLoaded = true;
             _unsubscribeFromBusList();

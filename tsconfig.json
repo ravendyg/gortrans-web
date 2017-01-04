@@ -2,10 +2,11 @@
   "compilerOptions":
   {
     "jsx": "react",
-    "target": "ES5",
+    "target": "ES6",
     "sourceMap": true,
 		"types": ["node"],
-		"experimentalDecorators": true
+		"experimentalDecorators": true,
+		"moduleResolution": "node"
 	},
 	"files":
 	[

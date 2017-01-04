@@ -43,7 +43,7 @@ export class BusGroup extends React.Component <BusGroupProps, BusGroupState>
 
   private _addBus(e: VehicleMeta)
   {
-    addBus(e);
+    addBus(e, true);
     this.props.closeCb();
   }
 
