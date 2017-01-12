@@ -42,12 +42,12 @@ Map.create();
 
 localForage.getItem('gortrans-info')
 .then(
-  ({routes, trasses, stopsData}: {[index: string]: any}): void =>
+  (data: any): void =>
   {
     makeRequestForBasicData(
-      routes || {routes: [], routeCodes: [], timestamp: 0},
-      trasses || {trasses: {}, timestamp: 0},
-      stopsData || {stops: {}, busStops: {}, timestamp: 0 }
+      data.routes || {routes: [], routeCodes: [], timestamp: 0},
+      data.trasses || {trasses: {}, timestamp: 0},
+      data.stopsData || {stops: {}, busStops: {}, timestamp: 0 }
     );
   }
 )
