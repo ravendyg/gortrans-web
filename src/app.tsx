@@ -40,13 +40,16 @@ if (!key)
 Socket.connect(key);
 Map.create();
 
-localForage.getItem('gortrans-info')
+bb.all([
+  localForage.getItem('gortrans-info'),
+  localForage.getItem('gortrans-info-trasses')
+])
 .then(
-  (data: any): void =>
+([data, trasses]: any []): void =>
   {
     makeRequestForBasicData(
       data.routes || {routes: [], routeCodes: [], timestamp: 0},
-      data.trasses || {trasses: {}, timestamp: 0},
+      trasses || {},
       data.stopsData || {stops: {}, busStops: {}, timestamp: 0 }
     );
   }
@@ -57,7 +60,7 @@ localForage.getItem('gortrans-info')
     console.error(err, 'get timestamp from localForage');
     makeRequestForBasicData(
       {routes: [], routeCodes: [], timestamp: 0},
-      {trasses: {}, timestamp: 0},
+      {},
       {stops: {}, busStops: {}, timestamp: 0}
     );
   }
@@ -65,12 +68,12 @@ localForage.getItem('gortrans-info')
 
 function makeRequestForBasicData(
   routes: { routes: ListMarsh [], routeCodes: string [], timestamp: number },
-  trasses: { trasses: { [busCode: string]: string }, timestamp: number },
+  trasses: { [busCode: string]: {data: Point [], tsp: number}},
   stopsData: { stops: { [stopId: string]: Stop }, busStops: BusStops, timestamp: number }
 )
 {
   request
-  .get(`${location.href}${config.SYNC_ROUTE}?routestimestamp=${routes.timestamp}&trassestimestamp=${trasses.timestamp}&api_key=${key}`)
+  .get(`${location.href}${config.SYNC_ROUTE}?routestimestamp=${routes.timestamp}&stopstimestamp=${stopsData.timestamp}&api_key=${key}`)
   .end(
     (err: Error, res: request.Response) =>
     {
@@ -91,13 +94,12 @@ function makeRequestForBasicData(
           res.body.routes = routes;
         }
 
-        if ( res.body.trasses.timestamp > trasses.timestamp )
+        if ( res.body.stopsData.timestamp > stopsData.timestamp )
         { // if not, don't need to update - it's the same
           updated = true;
         }
         else
         {
-          res.body.trasses = trasses;
           res.body.stopsData = stopsData;
         }
 
@@ -109,7 +111,7 @@ function makeRequestForBasicData(
         loadInfoToStore({
           routes: res.body.routes.routes,
           routeCodes: res.body.routes.routeCodes,
-          trasses: res.body.trasses.trasses,
+          trasses: trasses,
           stops: res.body.stopsData.stops,
           busStops: res.body.stopsData.busStops,
         });

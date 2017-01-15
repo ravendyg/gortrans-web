@@ -19,7 +19,7 @@ declare type ActionType =
 declare interface SocketService
 {
   connect (key: string): void;
-  addBusListener (code: string): void;
+  addBusListener (code: string, tsp: number): void;
   removeBusListener (code: string): void;
 }
 
@@ -52,7 +52,14 @@ declare type Info =
     }
   },
   routeCodes: string [],
-  trasses: { [busCode: string]: Point [] },
+  trasses:
+  {
+    [busCode: string]:
+    {
+      data: Point [],
+      tsp: number
+    }
+  },
   stops: { [stopId: string]: Stop },
   busStops: BusStops
 };
@@ -61,7 +68,14 @@ declare type RawInfo =
 {
   routes: ListMarsh [],
   routeCodes: string [],
-  trasses: { [busCode: string]: Point [] },
+  trasses:
+  {
+    [busCode: string]:
+    {
+      data: Point [],
+      tsp: number
+    }
+  },
   stops: { [stopId: string]: Stop },
   busStops: BusStops
 };
@@ -79,29 +93,16 @@ declare type busList =
 {
   buses: VehicleMeta [],
   stopsList: {[stopId: string]: Stop},
-  trasses: {[stopId: string]: Point []},
+  trasses:
+  {
+    [busCode: string]:
+    {
+      data: Point [],
+      tsp: number
+    }
+  },
   zoom: boolean
 };
-
-// declare type dataStorageStore =
-// {
-//   routes:
-//   {
-//     [type: string]: VehicleMeta []
-//   },
-//   typeNames:
-//   {
-//     [type: string]:
-//     {
-//       id: number,
-//       name: string
-//     }
-//   },
-//   vehicles: StateWithMarkers,
-//   trasses: { [busCode: string]: Point []},
-//   stops: { [stopId: string]: Stop },
-//   busStops: BusStops
-// };
 
 declare type VehicleMeta =
 {
@@ -191,6 +192,7 @@ interface iMap
   zoomToUser(): void;
   zoomIn(): void;
   zoomOut(): void;
+  updateTrass(busCode: string, data: Point []): void;
 }
 
 declare type Point =
@@ -198,12 +200,6 @@ declare type Point =
   lat: number,
   lng: number
 };
-
-// declare type Trass =
-// {
-
-// }
-
 
 declare type Stop =
 {

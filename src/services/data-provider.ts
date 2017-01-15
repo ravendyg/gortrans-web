@@ -7,7 +7,7 @@ import {config} from '../config';
 
 import {Map} from './map';
 
-import {Store} from './store';
+import {Store, updateTrass} from './store';
 
 var socket: SocketIOClient.Socket;
 
@@ -51,9 +51,14 @@ function connect(key: string)
 
   socket.on(
     'bus listener created',
-    (state: State) =>
+    (busCode: string, state: State, trassPoints: Point []) =>
     {
       Map.addVehicle(state);
+      if (trassPoints)
+      {
+        Map.updateTrass(busCode, trassPoints);
+        updateTrass(busCode, trassPoints);
+      }
     }
   );
 
@@ -67,9 +72,9 @@ function connect(key: string)
 };
 
 _Socket.prototype.addBusListener =
-function addBusListener(busCode: string)
+function addBusListener(busCode: string, tsp: number)
 {
-  socket.emit( 'add bus listener', busCode );
+  socket.emit( 'add bus listener', busCode, tsp );
 };
 
 _Socket.prototype.removeBusListener =

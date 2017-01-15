@@ -4,6 +4,7 @@
 import {combineReducers, createStore} from 'redux';
 import {config} from '../config';
 import {Actions} from './action-creators';
+import * as localForage from 'localforage';
 
 const app =
   combineReducers({
@@ -93,7 +94,7 @@ function getTrassList(buses: VehicleMeta [])
   var out = {};
   for (var bus of buses)
   {
-    out[bus.code] = info.trasses[bus.code];
+    out[bus.code] = info.trasses[bus.code] || {data: [], tsp: 0};
   }
   return out;
 }
@@ -184,70 +185,6 @@ function vehicles(state: {} = {}, action: ActionType)
     return state;
   }
 }
-
-// function dataStorage
-// ( state: dataStorageStore =
-//  {
-//    routes: {},
-//    trasses: {},
-//    typeNames:
-//    {
-//      'bus':     {id: 0, name: 'Автобусы'},
-//      'trolley': {id: 1, name: 'Троллейбусы'},
-//      'tram':    {id: 2, name: 'Трамваи'},
-//      'small':   {id: 7, name: 'Маршрутки'}
-//    },
-//    vehicles: {},
-//    stops: {},
-//    busStops: {}
-//   },
-//   action: ActionType
-// )
-// {
-//   var out: dataStorageStore = <dataStorageStore>{};
-//   Object['assign'](out, state);
-
-//   switch( action.type )
-//   {
-//     // case Actions.LOAD_LIST_OF_ROUTES:
-//     //   Object['assign'](out, {routes: {}} );
-//     //   // create lists
-//     //   out = mapVehiclesIntoCodes(action.payload.routes, out, 'bus', 0);
-//     //   out = mapVehiclesIntoCodes(action.payload.routes, out, 'trolley', 1);
-//     //   out = mapVehiclesIntoCodes(action.payload.routes, out, 'tram', 2);
-//     //   out = mapVehiclesIntoCodes(action.payload.routes, out, 'small', 7);
-//     // return out;
-
-//     // case Actions.LOAD_LIST_OF_TRASSES:
-//     //   Object['assign'](out, {trasses: {}} );
-
-//     //   for ( var busCode of Object.keys(action.payload.trasses) )
-//     //   {
-//     //     try
-//     //     {
-//     //       out.trasses[busCode] = JSON.parse( action.payload.trasses[busCode] ).trasses[0].r[0].u;
-//     //     }
-//     //     catch (err)
-//     //     {
-//     //       console.error(err, 'parsing trass');
-//     //       out.trasses[busCode] = [];
-//     //     }
-//     //   }
-//     // return out;
-
-//     // case Actions.UPDATE_STATE:
-//     //   Object['assign'](out, {vehicles: action.payload.state} );
-//     // return out;
-
-//     // case Actions.LOAD_LIST_OF_STOPS:
-//     //   Object['assign'](out, {stops: action.payload.stops, busStops: action.payload.busStops} );
-//     // return out;
-
-//     default:
-//     return state;
-//   }
-// };
-
 function mapVehiclesIntoCodes(
   data: ListMarsh [],
   target:
@@ -283,5 +220,13 @@ function mapVehiclesIntoCodes(
   return target;
 }
 
-
+export function updateTrass(busCode: string, trassPoints: Point [])
+{
+  info.trasses[busCode] =
+  {
+    data: trassPoints,
+    tsp: Date.now() - 1000 * 60 * 5
+  };
+  localForage.setItem('gortrans-info-trasses', info.trasses);
+}
 

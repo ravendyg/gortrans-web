@@ -289,10 +289,9 @@ function create()
         if (!this.trassLines[busCode])
         {
           // draw path
-          var trassPoints: Point [] = _busList.trasses[busCode];
+          var trassPoints: Point [] = _busList.trasses[busCode].data;
           var latLng: [number, number] [] =
-            (trassPoints || [])
-            .map( e => <[number, number]>[e.lat, e.lng]);
+            trassPoints.map( e => <[number, number]>[e.lat, e.lng]);
           var color;
           for (var _bus of _busList.buses)
           {
@@ -302,19 +301,59 @@ function create()
               break;
             }
           }
-          this.trassLines[busCode] = <L.Polyline> L.polyline( latLng, { color } );
-          this.trassLines[busCode].addTo(map);
-          if (_busList.zoom)
+          if (latLng.length > 0)
           {
-            setTimeout(
-              () => { this.zoomToBusRote(busCode); },
-              50
-            );
+            this.trassLines[busCode] = <L.Polyline> L.polyline( latLng, { color } );
+            this.trassLines[busCode].addTo(map);
+            if (_busList.zoom)
+            {
+              setTimeout(
+                () => { this.zoomToBusRote(busCode); },
+                50
+              );
+            }
+          }
+          else
+          {
+            this.trassLines[busCode] = null;
           }
         }
       }
     }
   );
+}
+
+_Map.prototype.updateTrass =
+function updateTrass(busCode: string, trassPoints: Point []): void
+{
+  var map = <L.Map> this._map;
+  if (this.trassLines[busCode])
+  {
+    map.removeLayer( this.trassLines[busCode] );
+  }
+  else
+  { // loaded first time
+    setTimeout(
+      () => { this.zoomToBusRote(busCode); },
+      50
+    );
+  }
+  var latLng: [number, number] [] =
+    trassPoints.map( e => <[number, number]>[e.lat, e.lng]);
+  var color;
+  var _busList = (Store.getState() as ReduxState).busList;
+  for (var _bus of _busList.buses)
+  {
+    if (_bus.code === busCode)
+    {
+      color = _bus.color;
+      this.trassLines[busCode] = <L.Polyline> L.polyline( latLng, { color } );
+      this.trassLines[busCode].addTo(map);
+      break;
+    }
+  }
+
+
 }
 
 _Map.prototype.zoomToUser =
