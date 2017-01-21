@@ -47,6 +47,14 @@ bb.all([
 .then(
 ([data, trasses]: any []): void =>
   {
+    if (data.stopsData && !data.stopsData.timestamp)
+    {
+      data.stopsData.timestamp = 0;
+    }
+    if (data.routes && !data.routes.timestamp)
+    {
+      data.routes.timestamp = 0;
+    }
     makeRequestForBasicData(
       data.routes || {routes: [], routeCodes: [], timestamp: 0},
       trasses || {},
