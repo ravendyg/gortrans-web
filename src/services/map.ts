@@ -537,13 +537,13 @@ function createMarker(data: busData, code: string, graph: string)
   // make better popup
 
   var azimuth = Math.floor( (Math.abs(+data.azimuth+22.5)) / 45 )*45 % 360;
-  debugger;
+
   marker =
     L.marker([data.lat, data.lng], {icon: icons[data.id_typetr+'-'+azimuth]})
     .bindPopup( createPopupCode(data, '') )
-    .bindTooltip(data.title, {permanent: true, direction: 'left'})
     ;
   marker['_data'] = data;
+  updateTooltip(marker);
 
   marker.on(
     'popupopen',
@@ -569,10 +569,11 @@ function updateMarker(data: busData, code: string, graph: string)
   var azimuth = Math.floor( (Math.abs(+data.azimuth+22.5)) / 45 )*45 % 360;
 
   var temp = this._state[code].vh[graph];
-  temp.marker['_data'] = data;
 
   temp.marker.setLatLng([data.lat, data.lng]);
   temp.marker.setIcon(icons[data.id_typetr+'-'+azimuth]);
+  updateTooltip(temp.marker, data);
+  temp.marker['_data'] = data;
   if (temp.marker.getPopup().isOpen())
   {
     onMarkerPopupopen.call(temp.marker, code);
@@ -848,4 +849,19 @@ function getStopSchedule(marker: L.Marker, stop: Stop, id: string)
 function entity(e: any): any
 {
   return e;
+}
+
+function updateTooltip(marker: L.Marker, data?: busData): void
+{
+  if (!data)
+  { // new
+    var direction: L.Direction = marker['_data'].direction === 'A' ? 'right' : 'left';
+    marker.bindTooltip(marker['_data'].title, {permanent: true, direction});
+  }
+  else if (data.direction !== marker['_data'].direction)
+  {
+    marker.unbindTooltip();
+    var direction: L.Direction = data.direction === 'A' ? 'right' : 'left';
+    marker.bindTooltip(data.title, {permanent: true, direction});
+  }
 }
