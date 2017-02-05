@@ -537,6 +537,7 @@ function createMarker(data: busData, code: string, graph: string)
   // make better popup
 
   var azimuth = Math.floor( (Math.abs(+data.azimuth+22.5)) / 45 )*45 % 360;
+  debugger;
   marker =
     L.marker([data.lat, data.lng], {icon: icons[data.id_typetr+'-'+azimuth]})
     .bindPopup( createPopupCode(data, '') )
@@ -602,15 +603,15 @@ function createPopupCode(data: busData, rasp: string): string
   var type, stopTime, stopName;
   switch (data.id_typetr)
   {
-    case '2':
+    case 2:
       type = 'Троллейбус';
     break;
 
-    case '3':
+    case 3:
       type = 'Трамвай';
     break;
 
-    case '8':
+    case 8:
       type = 'Маршрутное такси';
     break;
 

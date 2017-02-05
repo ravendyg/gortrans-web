@@ -124,7 +124,7 @@ interface InputChangeEvent extends Event
 declare type busData =
 {
   title: string,
-  id_typetr: string,
+  id_typetr: number,
   marsh: string,
   graph: number,
   direction: string,
@@ -133,8 +133,8 @@ declare type busData =
   time_nav: string,
   azimuth: number,
   speed: number,
-  segment_order: string,
-  ramp: string
+  // segment_order: string,
+  // ramp: string
 };
 
 declare type StateWithMarkers =
