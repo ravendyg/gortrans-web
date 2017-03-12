@@ -18,7 +18,7 @@ function _Socket()
 _Socket.prototype.connect =
 function connect(key: string)
 {
-  socket = io.connect(location.href, {query: `apiKey=${key}`});
+  socket = io.connect(location.href, {query: `api_key=${key}`});
 
   socket.on(
     'connect',
