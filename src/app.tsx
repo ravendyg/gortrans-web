@@ -13,6 +13,7 @@ import { BusList } from './components/bus-list/bus-list';
 import { SearchBtn } from './components/btns/search-btn';
 import { LocationBtn } from './components/btns/location-btn';
 import { ZoomBtn } from './components/btns/zoom-btn';
+import { AndroidBtn } from './components/btns/android';
 import { ShareGroup } from './components/share-group/share-group';
 
 import {Map} from './services/map';
@@ -226,6 +227,7 @@ class App extends React.Component <AppProps, AppState>
       {location}
       <ZoomBtn icon="plus"  zoom={Map.zoomIn.bind(Map)}/>
       <ZoomBtn icon="minus" zoom={Map.zoomOut.bind(Map)}/>
+      <AndroidBtn />
       <ShareGroup/>
       {this.props.children}
     </div>
