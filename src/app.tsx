@@ -94,7 +94,7 @@ function makeRequestForBasicData(
       {
         var updated = false;
 
-        if ( res.body.routes.timestamp > routes.timestamp )
+        if ( res.body.routes.timestamp > routes.timestamp || !routes.timestamp )
         { // if not, don't need to update - it's the same
           updated = true;
         }
@@ -103,7 +103,7 @@ function makeRequestForBasicData(
           res.body.routes = routes;
         }
 
-        if ( res.body.stopsData.timestamp > stopsData.timestamp )
+        if ( res.body.stopsData.timestamp > stopsData.timestamp || !stopsData.timestamp )
         { // if not, don't need to update - it's the same
           updated = true;
         }
